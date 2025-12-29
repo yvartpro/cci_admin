@@ -16,3 +16,9 @@ export const updateArticle = (id, data) =>
 
 export const deleteArticle = (id) =>
   api.delete(`/articles/${id}`).then(res => res.data).catch(err => { throw err });
+
+export const uploadFiles = (formData) =>
+  api.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    .then(res => res.data)
+    .catch(err => { throw err })
+    .finally(() => {});

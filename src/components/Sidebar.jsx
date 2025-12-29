@@ -7,6 +7,7 @@ const Sidebar = () => {
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20}/> },
     { name: 'Create Article', path: '/create', icon: <FilePlus size={20}/> },
     { name: 'Manage Articles', path: '/manage', icon: <Files size={20}/> },
+    { name: 'Media Library', path: '/media', icon: <Files size={20}/> },
   ];
 
   return (

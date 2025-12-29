@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Image as ImageIcon, Type, List, Quote, Video } from 'lucide-react';
 import { createArticle, updateArticle, getArticleById } from '../services/api';
+import MediaGrid from '../components/MediaGrid';
 import WysiwygInput from '../components/WysiwygInput';
 import ArticlePreview from '../components/ArticlePreview';
 
@@ -12,6 +13,9 @@ const ArticleEditor = () => {
     title: '', category: '', description: '',
     media: [], sections: []
   });
+  const [filesMap, setFilesMap] = useState({}); // retained but unused for now
+  const [showPreviewMobile, setShowPreviewMobile] = useState(false);
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -50,9 +54,9 @@ const ArticleEditor = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 md:flex-row flex-col">
       {/* Editor Panel */}
-      <div className="w-1/2 overflow-y-auto p-8 border-r">
+      <div className={`md:w-1/2 w-full overflow-y-auto p-8 border-r bg-gray-50 ${showPreviewMobile ? 'hidden' : ''}`}>
         <h1 className="text-2xl font-bold mb-6">{id ? 'Edit' : 'Create'} Article</h1>
         
         <div className="space-y-4 mb-8 bg-white p-4 rounded shadow-sm">
@@ -69,7 +73,7 @@ const ArticleEditor = () => {
             </button>
           </div>
           {article.media.map((m, idx) => (
-            <div key={m.id} className="flex gap-2 mb-2">
+            <div key={m.id} className="flex gap-2 mb-3 items-center">
               <select className="border rounded p-2" value={m.type} onChange={e => {
                 const newMedia = [...article.media];
                 newMedia[idx].type = e.target.value;
@@ -78,13 +82,37 @@ const ArticleEditor = () => {
                 <option value="image">Image</option>
                 <option value="video">Video</option>
               </select>
-              <input className="flex-1 border rounded p-2" placeholder="URL" value={m.urls[0]} onChange={e => {
+
+              <input className="flex-1 border rounded p-2" placeholder="Media URL" value={m.urls[0] || ''} onChange={e => {
                 const newMedia = [...article.media];
                 newMedia[idx].urls = [e.target.value];
                 setArticle({...article, media: newMedia});
               }} />
+
+              <div>
+                <button onClick={() => setShowMediaLibrary(true)} className="text-sm px-2 py-1 bg-gray-100 rounded">Choose from library</button>
+              </div>
             </div>
           ))}
+
+          {/* Media Library Modal */}
+          {showMediaLibrary && (
+            <div className="fixed inset-0 bg-black/40 flex items-start justify-center p-6 z-50">
+              <div className="bg-white rounded w-full max-w-4xl p-4 shadow-lg">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold">Media Library</h3>
+                  <button onClick={() => setShowMediaLibrary(false)} className="text-sm text-gray-600">Close</button>
+                </div>
+                <MediaGrid onSelect={(entries) => {
+                  // entries is an array of media items from the library
+                  const newMedia = [...article.media]
+                  entries.forEach(ent => newMedia.push({ id: crypto.randomUUID(), type: ent.type, urls: ent.urls }))
+                  setArticle({...article, media: newMedia})
+                  setShowMediaLibrary(false)
+                }} />
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Sections Manager */}
@@ -129,10 +157,19 @@ const ArticleEditor = () => {
         <button onClick={handleSave} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold mt-8 hover:bg-indigo-700 transition">
           {id ? 'Update' : 'Publish'} Article
         </button>
+
+        {/* Mobile preview toggle button */}
+        <div className="md:hidden fixed right-4 bottom-6">
+          <button onClick={() => setShowPreviewMobile(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg">Show preview</button>
+        </div>
       </div>
 
       {/* Live Preview Panel */}
-      <div className="w-1/2 overflow-y-auto bg-white p-12">
+      <div className={`md:w-1/2 w-full overflow-y-auto bg-white p-12 ${showPreviewMobile ? '' : 'md:block'}`}>
+        {/* mobile: show Edit mode button */}
+        <div className="md:hidden mb-4">
+          <button onClick={() => setShowPreviewMobile(false)} className="bg-gray-100 px-3 py-1 rounded">Edit mode</button>
+        </div>
         <div className="max-w-2xl mx-auto">
           <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">{article.category || 'Category'}</span>
           <h1 className="text-4xl font-extrabold mt-2 mb-8">{article.title || 'Article Title'}</h1>

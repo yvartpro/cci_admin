@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import ArticleEditor from './pages/ArticleEditor';
 import ManageArticles from './pages/ManageArticles';
+import MediaLibrary from './pages/MediaLibrary';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/create" element={<ArticleEditor />} />
+          <Route path="/media" element={<MediaLibrary />} />
           <Route path="/manage" element={<ManageArticles />} />
           <Route path="/edit/:id" element={<ArticleEditor />} />
         </Routes>
