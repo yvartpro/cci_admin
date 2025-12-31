@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import MediaUploader from '../components/MediaUploader'
 import MediaGrid from '../components/MediaGrid'
 import { useNavigate } from 'react-router-dom'
 
 const MediaLibrary = () => {
   const navigate = useNavigate()
+  const [reloadKey, setReloadKey] = useState(0)
 
   return (
     <div className="p-8">
@@ -13,10 +15,10 @@ const MediaLibrary = () => {
           <button onClick={() => navigate('/create')} className="bg-indigo-600 text-white px-3 py-1 rounded">Create Article</button>
         </div>
 
-        <MediaUploader onUploaded={() => { /* could refresh grid via event in future */ }} />
+        <MediaUploader onUploaded={() => setReloadKey(k => k + 1)} />
 
         <div className="mt-6">
-          <MediaGrid />
+          <MediaGrid refreshKey={reloadKey} />
         </div>
       </div>
     </div>

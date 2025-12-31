@@ -1,13 +1,32 @@
 import { useEffect, useState } from 'react'
 import { listMedia, deleteMediaEntry } from '../services/mediaStore'
+import { getFiles } from '../services/api'
 
-const MediaGrid = ({ onSelect }) => {
+const MediaGrid = ({ onSelect, refreshKey }) => {
   const [items, setItems] = useState([])
   const [selected, setSelected] = useState(new Set())
 
-  const load = () => listMedia().then(setItems)
+  const load = async () => {
+    try {
+      // fetch server files and local entries, but only display server-backed items
+      const files = await getFiles().catch(err => console.error(err)) //Promise.all([getFiles().catch(() => []), listMedia().catch(() => [])])
+      const serverItems = files.map(s => ({
+        id: String(s.id),
+        type: (s.mime || '').startsWith('image') ? 'image' : 'video',
+        url: s.url,
+        urls: [s.url],
+        filename: s.filename,
+        optimized: !!s.optimized
+      }))
+      setItems(serverItems)
+    } catch (err) {
+      listMedia().then(setItems)
+    }
+  }
 
   useEffect(() => { load() }, [])
+  // reload when refreshKey changes (triggered after uploads)
+  useEffect(() => { load() }, [refreshKey])
 
   const toggle = (id) => {
     setSelected(prev => {
@@ -36,7 +55,16 @@ const MediaGrid = ({ onSelect }) => {
               <input type="checkbox" checked={selected.has(m.id)} onChange={() => toggle(m.id)} />
             </div>
             <div className="h-36 bg-gray-100 flex items-center justify-center">
-              {m.type === 'image' ? <img src={m.urls[0]} alt="media" className="object-cover w-full h-full" /> : <video src={m.urls[0]} className="w-full h-full object-cover" />}
+              {m.type === 'image' ? (
+                <img
+                  src={m.url || (m.urls && m.urls[0])}
+                  alt={m.url || 'media'}
+                  className="object-cover w-full h-full"
+                  onError={(e) => { console.error('img load error', m, e); e.currentTarget.style.opacity = 0.4 }}
+                />
+              ) : (
+                <video src={m.url || (m.urls && m.urls[0])} className="w-full h-full object-cover" />
+              )}
             </div>
             <div className="p-2 flex items-center justify-between text-xs">
               <button onClick={() => onSelect && onSelect([m])} className="text-indigo-600">Select</button>

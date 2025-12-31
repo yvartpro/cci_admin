@@ -1,189 +1,331 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Image as ImageIcon, Type, List, Quote, Video } from 'lucide-react';
-import { createArticle, updateArticle, getArticleById } from '../services/api';
-import MediaGrid from '../components/MediaGrid';
-import WysiwygInput from '../components/WysiwygInput';
-import ArticlePreview from '../components/ArticlePreview';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 
-const ArticleEditor = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [article, setArticle] = useState({
-    title: '', category: '', description: '',
-    media: [], sections: []
-  });
-  const [filesMap, setFilesMap] = useState({}); // retained but unused for now
-  const [showPreviewMobile, setShowPreviewMobile] = useState(false);
-  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
+import {
+  createArticle,
+  updateArticle,
+  getArticleById,
+} from "../services/api";
 
-  useEffect(() => {
-    if (id) {
-      getArticleById(id).then(data => setArticle(data));
-    }
-  }, [id]);
+import WysiwygInput from "../components/WysiwygInput";
+import ArticlePreview from "../components/ArticlePreview";
+import MediaGrid from "../components/MediaGrid";
+import { createSlug } from "../services/helper";
 
-  // --- Handlers ---
-  const addMedia = () => setArticle({ ...article, 
-    media: [...article.media, { id: crypto.randomUUID(), type: 'image', urls: [''] }] 
-  });
-
-  const addSection = () => setArticle({ ...article, 
-    sections: [...article.sections, { id: crypto.randomUUID(), title: '', blocks: [] }] 
-  });
-
-  const addBlock = (sectionId, type) => {
-    const newSections = article.sections.map(s => {
-      if (s.id !== sectionId) return s;
-      return { ...s, blocks: [...s.blocks, { id: crypto.randomUUID(), type, value: type === 'ol' || type === 'ul' ? [] : '' }] };
-    });
-    setArticle({ ...article, sections: newSections });
-  };
-
-  const updateBlock = (sectionId, blockId, value) => {
-    const newSections = article.sections.map(s => {
-      if (s.id !== sectionId) return s;
-      return { ...s, blocks: s.blocks.map(b => b.id === blockId ? { ...b, value } : b) };
-    });
-    setArticle({ ...article, sections: newSections });
-  };
-
-  const handleSave = () => {
-    const request = id ? updateArticle(id, article) : createArticle(article);
-    request.then(() => navigate('/manage')).catch(err => alert("Error saving"));
-  };
-
-  return (
-    <div className="flex h-screen bg-gray-50 md:flex-row flex-col">
-      {/* Editor Panel */}
-      <div className={`md:w-1/2 w-full overflow-y-auto p-8 border-r bg-gray-50 ${showPreviewMobile ? 'hidden' : ''}`}>
-        <h1 className="text-2xl font-bold mb-6">{id ? 'Edit' : 'Create'} Article</h1>
-        
-        <div className="space-y-4 mb-8 bg-white p-4 rounded shadow-sm">
-          <input className="w-full p-2 border rounded" placeholder="Title" value={article.title} onChange={e => setArticle({...article, title: e.target.value})} />
-          <input className="w-full p-2 border rounded" placeholder="Category" value={article.category} onChange={e => setArticle({...article, category: e.target.value})} />
-        </div>
-
-        {/* Media Manager */}
-        <section className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="font-semibold">Article-Level Media</h2>
-            <button onClick={addMedia} className="text-sm bg-blue-600 text-white px-3 py-1 rounded flex items-center gap-1">
-              <Plus size={14}/> Add Media
-            </button>
-          </div>
-          {article.media.map((m, idx) => (
-            <div key={m.id} className="flex gap-2 mb-3 items-center">
-              <select className="border rounded p-2" value={m.type} onChange={e => {
-                const newMedia = [...article.media];
-                newMedia[idx].type = e.target.value;
-                setArticle({...article, media: newMedia});
-              }}>
-                <option value="image">Image</option>
-                <option value="video">Video</option>
-              </select>
-
-              <input className="flex-1 border rounded p-2" placeholder="Media URL" value={m.urls[0] || ''} onChange={e => {
-                const newMedia = [...article.media];
-                newMedia[idx].urls = [e.target.value];
-                setArticle({...article, media: newMedia});
-              }} />
-
-              <div>
-                <button onClick={() => setShowMediaLibrary(true)} className="text-sm px-2 py-1 bg-gray-100 rounded">Choose from library</button>
-              </div>
-            </div>
-          ))}
-
-          {/* Media Library Modal */}
-          {showMediaLibrary && (
-            <div className="fixed inset-0 bg-black/40 flex items-start justify-center p-6 z-50">
-              <div className="bg-white rounded w-full max-w-4xl p-4 shadow-lg">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold">Media Library</h3>
-                  <button onClick={() => setShowMediaLibrary(false)} className="text-sm text-gray-600">Close</button>
-                </div>
-                <MediaGrid onSelect={(entries) => {
-                  // entries is an array of media items from the library
-                  const newMedia = [...article.media]
-                  entries.forEach(ent => newMedia.push({ id: crypto.randomUUID(), type: ent.type, urls: ent.urls }))
-                  setArticle({...article, media: newMedia})
-                  setShowMediaLibrary(false)
-                }} />
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Sections Manager */}
-        <section>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="font-semibold">Content Sections</h2>
-            <button onClick={addSection} className="text-sm bg-green-600 text-white px-3 py-1 rounded">Add Section</button>
-          </div>
-          {article.sections.map(section => (
-            <div key={section.id} className="border-2 border-dashed p-4 rounded-lg mb-6 bg-white">
-              <input className="font-bold mb-4 border-b w-full outline-none" placeholder="Section Title (Optional)" value={section.title} onChange={e => {
-                const newSecs = article.sections.map(s => s.id === section.id ? {...s, title: e.target.value} : s);
-                setArticle({...article, sections: newSecs});
-              }} />
-              
-              {section.blocks.map(block => (
-                <div key={block.id} className="mb-4 relative group">
-                  <div className="absolute -left-8 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => {
-                      const newSecs = article.sections.map(s => s.id === section.id ? {...s, blocks: s.blocks.filter(b => b.id !== block.id)} : s);
-                      setArticle({...article, sections: newSecs});
-                    }}><Trash2 size={16} className="text-red-500"/></button>
-                  </div>
-                  {['text', 'quote', 'citation', 'subtitle'].includes(block.type) ? (
-                    <WysiwygInput value={block.value} onChange={(val) => updateBlock(section.id, block.id, val)} />
-                  ) : (
-                    <input className="w-full p-2 border rounded" placeholder={`${block.type} URL`} value={block.value} onChange={e => updateBlock(section.id, block.id, e.target.value)} />
-                  )}
-                </div>
-              ))}
-
-              <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-                <BlockBtn icon={<Type size={14}/>} label="Text" onClick={() => addBlock(section.id, 'text')} />
-                <BlockBtn icon={<ImageIcon size={14}/>} label="Img" onClick={() => addBlock(section.id, 'image')} />
-                <BlockBtn icon={<Video size={14}/>} label="Vid" onClick={() => addBlock(section.id, 'video')} />
-                <BlockBtn icon={<Quote size={14}/>} label="Quote" onClick={() => addBlock(section.id, 'quote')} />
-              </div>
-            </div>
-          ))}
-        </section>
-
-        <button onClick={handleSave} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold mt-8 hover:bg-indigo-700 transition">
-          {id ? 'Update' : 'Publish'} Article
-        </button>
-
-        {/* Mobile preview toggle button */}
-        <div className="md:hidden fixed right-4 bottom-6">
-          <button onClick={() => setShowPreviewMobile(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg">Show preview</button>
-        </div>
-      </div>
-
-      {/* Live Preview Panel */}
-      <div className={`md:w-1/2 w-full overflow-y-auto bg-white p-12 ${showPreviewMobile ? '' : 'md:block'}`}>
-        {/* mobile: show Edit mode button */}
-        <div className="md:hidden mb-4">
-          <button onClick={() => setShowPreviewMobile(false)} className="bg-gray-100 px-3 py-1 rounded">Edit mode</button>
-        </div>
-        <div className="max-w-2xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">{article.category || 'Category'}</span>
-          <h1 className="text-4xl font-extrabold mt-2 mb-8">{article.title || 'Article Title'}</h1>
-          <ArticlePreview data={article} />
-        </div>
-      </div>
-    </div>
-  );
+/* ================== CONSTANT ================== */
+const EMPTY_ARTICLE = {
+  title: "",
+  subtitle: null,
+  excerpt: null,
+  category: null,
+  slug: "",
+  language: "fr",
+  hero_url: null,
+  hero_file_id: null,
+  author_name: null,
+  reading_time: null,
+  featured: false,
+  status: "draft",
+  published_at: null,
+  meta: {},
+  tags: [],
+  sections: [],
+  version: 1,
 };
 
-const BlockBtn = ({ icon, label, onClick }) => (
-  <button onClick={onClick} className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-xs">
-    {icon} {label}
+/* ================== COMPONENT ================== */
+export default function ArticleEditor() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [article, setArticle] = useState(EMPTY_ARTICLE);
+  const [loading, setLoading] = useState(false);
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
+  const [mediaCtx, setMediaCtx] = useState(null);
+
+  /* ============ LOAD ============ */
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    getArticleById(id)
+      .then(setArticle)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  /* ============ HELPERS ============ */
+  const setField = (key, value) => setArticle((article) => ({ ...article, [key]: value }));
+  const updateSections = (fn) =>
+    setArticle((article) => ({ ...article, sections: fn(article.sections) }));
+
+  const openHeroMedia = () => {
+    setMediaCtx({ type: "hero" });
+    setShowMediaLibrary(true);
+  };
+
+  
+
+  /* ============ SECTIONS ============ */
+  const addSection = () =>
+    updateSections((s) => [
+      ...s,
+      { id: crypto.randomUUID(), title: "", blocks: [] },
+    ]);
+
+  const removeSection = (sid) =>
+    updateSections((s) => s.filter((x) => x.id !== sid));
+
+  /* ============ BLOCKS ============ */
+  const addBlock = (sid, type) =>
+    updateSections((s) =>
+      s.map((sec) =>
+        sec.id === sid
+          ? {...sec, blocks: [...sec.blocks, { id: crypto.randomUUID(), type, value: "" }],
+        }: sec
+      )
+    );
+
+  const updateBlock = (sid, bid, value) =>
+    updateSections((s) =>
+      s.map((sec) =>
+        sec.id === sid
+          ? {...sec, blocks: sec.blocks.map((block) => block.id === bid ? { ...block, value } : block )}
+          : sec
+      )
+    );
+
+  const removeBlock = (sid, bid) =>
+    updateSections((sections) =>
+      sections.map((section) =>
+        section.id === sid
+          ? { ...section, blocks: section.blocks.filter((b) => b.id !== bid) }
+          : section
+      )
+    );
+
+  /* ============ MEDIA ============ */
+
+  const openMedia = (sectionId, blockId) => {
+    setMediaCtx({ type: "block", sectionId, blockId });
+    setShowMediaLibrary(true);
+  };
+
+
+  const handleMediaSelect = (entries) => {
+    if (!mediaCtx || !entries.length) return;
+    const url = entries[0]?.urls?.[0] || null;
+
+    if (mediaCtx.type === "hero") {
+      setField("hero_url", url);
+      setField("hero_file_id", entries[0]?.id || null);
+    }
+
+    if (mediaCtx.type === "block") {
+      updateBlock(
+        mediaCtx.sectionId,
+        mediaCtx.blockId,
+        url
+      );
+    }
+
+    setShowMediaLibrary(false);
+    setMediaCtx(null);
+  };
+
+  /* ============ SAVE ============ */
+  const save = () => {
+    console.log("Saving article:", article);
+    const payload = { ...article, slug: createSlug(article.title) };
+    const req = id ? updateArticle(id, payload) : createArticle(payload);
+    req.then(() => navigate("/manage")).catch(alert).finally(() => {});
+  };
+
+  if (loading) return <div className="p-8">Loading…</div>;
+
+  /* ============ RENDER ============ */
+  return (
+    <div className="flex h-screen bg-gray-50">
+      {/* EDITOR */}
+      <div className="w-full md:w-1/2 p-8 overflow-y-auto border-r">
+        <h1 className="text-2xl font-bold mb-6">
+          {id ? "Edit Article" : "Create Article"}
+        </h1>
+
+        <Card>
+          <Input label="Title" value={article.title} onChange={(v) => setField("title", v)} />
+          <Input label="Subtitle" value={article.subtitle} onChange={(v) => setField("subtitle", v || null)} />
+          <Textarea label="Excerpt" value={article.excerpt} onChange={(v) => setField("excerpt", v || null)} />
+          <Input label="Category" value={article.category} onChange={(v) => setField("category", v || null)} />
+          <div className="mb-3">
+            <label className="text-xs text-gray-500">Hero URL</label>
+            <div className="flex gap-2">
+              <input
+                className="flex-1 border p-2 rounded"
+                value={article.hero_url || ""}
+                onChange={(e) => setField("hero_url", e.target.value || null)}
+              />
+              <button
+                onClick={openHeroMedia}
+                className="px-3 text-xs bg-gray-100 rounded hover:bg-gray-200"
+              >
+                Open media
+              </button>
+            </div>
+          </div>
+        </Card>
+
+        <Header title="Sections" action="Add section" onAction={addSection} />
+
+        {article.sections.map((section) => (
+          <Card key={section.id}>
+            <div className="flex gap-2 mb-3">
+              <input
+                className="flex-1 font-bold border-b outline-none"
+                placeholder="Section title"
+                value={section.title}
+                onChange={(e) =>
+                  updateSections((s) =>
+                    s.map((x) =>
+                      x.id === section.id ? { ...x, title: e.target.value } : x
+                    )
+                  )
+                }
+              />
+              <IconBtn onClick={() => removeSection(section.id)}>
+                <Trash2 size={14} />
+              </IconBtn>
+            </div>
+
+            {section.blocks.map((block) => (
+              <div key={block.id} className="mb-4 relative">
+                <IconBtn
+                  className="absolute right-0 top-0"
+                  onClick={() => removeBlock(section.id, block.id)}
+                >
+                  <Trash2 size={14} />
+                </IconBtn>
+
+                {["image", "video"].includes(block.type) ? (
+                  <>
+                    <Input
+                      label={`${block.type} URL`}
+                      value={block.value}
+                      onChange={(v) =>
+                        updateBlock(section.id, block.id, v)
+                      }
+                    />
+                    <button
+                      onClick={() => openMedia(section.id, block.id)}
+                      className="text-xs text-indigo-600"
+                    >
+                      Open media library
+                    </button>
+                  </>
+                ) : (
+                  <WysiwygInput
+                    value={block.value}
+                    onChange={(v) =>
+                      updateBlock(section.id, block.id, v)
+                    }
+                  />
+                )}
+              </div>
+            ))}
+
+            <BlockBar onAdd={(t) => addBlock(section.id, t)} />
+          </Card>
+        ))}
+
+        <button
+          onClick={save}
+          className="w-full mt-6 bg-indigo-600 text-white py-3 rounded font-bold"
+        >
+          {id ? "Update" : "Publish"}
+        </button>
+      </div>
+
+      {/* PREVIEW */}
+      <div className="hidden md:block md:w-1/2 p-10 bg-white overflow-y-auto">
+        <ArticlePreview data={article} />
+      </div>
+
+      {/* MEDIA MODAL */}
+      {showMediaLibrary && (
+        <div className="fixed inset-0 bg-black/40 flex justify-center p-6 z-50">
+          <div className="bg-white w-full max-w-4xl p-4 rounded shadow-lg">
+            <div className="flex justify-between mb-4">
+              <h3 className="font-bold">Media Library</h3>
+              <button
+                onClick={() => {
+                  setShowMediaLibrary(false);
+                  setMediaCtx(null);
+                }}
+                className="text-sm text-gray-600"
+              >
+                Close
+              </button>
+            </div>
+            <MediaGrid onSelect={handleMediaSelect} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ================== UI HELPERS ================== */
+const Card = ({ children }) => (
+  <div className="bg-white p-4 rounded shadow-sm mb-6">{children}</div>
+);
+
+const Header = ({ title, action, onAction }) => (
+  <div className="flex justify-between mb-4">
+    <h2 className="font-semibold">{title}</h2>
+    <button onClick={onAction} className="text-sm bg-green-600 text-white px-3 py-1 rounded">
+      {action}
+    </button>
+  </div>
+);
+
+const Input = ({ label, value, onChange }) => (
+  <div className="mb-3">
+    <label className="text-xs text-gray-500">{label}</label>
+    <input
+      className="w-full border p-2 rounded"
+      value={value || ""}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  </div>
+);
+
+const Textarea = ({ label, value, onChange }) => (
+  <div className="mb-3">
+    <label className="text-xs text-gray-500">{label}</label>
+    <textarea
+      className="w-full border p-2 rounded"
+      value={value || ""}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  </div>
+);
+
+const IconBtn = ({ children, className = "", ...p }) => (
+  <button {...p} className={`text-red-500 ${className}`}>
+    {children}
   </button>
 );
 
-export default ArticleEditor;
+const BlockBar = ({ onAdd }) => (
+  <div className="flex gap-2 flex-wrap mt-3">
+    {["text", "subtitle", "image", "video", "quote"].map((t) => (
+      <button
+        key={t}
+        onClick={() => onAdd(t)}
+        className="bg-gray-100 px-2 py-1 rounded text-xs"
+      >
+        {t}
+      </button>
+    ))}
+  </div>
+);
