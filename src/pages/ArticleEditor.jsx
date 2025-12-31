@@ -64,7 +64,6 @@ export default function ArticleEditor() {
     setShowMediaLibrary(true);
   };
 
-  
 
   /* ============ SECTIONS ============ */
   const addSection = () =>

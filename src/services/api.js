@@ -12,7 +12,7 @@ export const createArticle = (data) =>
   api.post("/articles", data).then(res => res.data).then(data => console.log("Created article:", data)).catch(err => { throw err });
 
 export const updateArticle = (id, data) =>
-  api.put(`/articles/${id}`, data).then(res => res.data).catch(err => { throw err });
+  api.patch(`/articles/${id}`, data).then(res => res.data).catch(err => { throw err });
 
 export const deleteArticle = (id) =>
   api.delete(`/articles/${id}`).then(res => res.data).catch(err => { throw err });
