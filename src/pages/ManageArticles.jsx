@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Eye, X } from 'lucide-react';
-import { getArticles, deleteArticle } from '../services/api';
+import { getArticles, deleteArticle, getArticleById } from '../services/api';
 import ArticlePreview from '../components/ArticlePreview';
 
 const ManageArticles = () => {
@@ -24,6 +24,16 @@ const ManageArticles = () => {
     }
   };
 
+  const handlePreview = async (article) => {
+    setPreviewArticle(article); // Show immediate preview with cached data
+    try {
+      const fresh = await getArticleById(article.id);
+      setPreviewArticle(fresh); // Update with fresh data (and trigger view increment)
+    } catch (err) {
+      console.error("Failed to refresh preview", err);
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">Manage Articles</h1>
@@ -42,7 +52,7 @@ const ManageArticles = () => {
                 <td className="p-4 font-medium">{article.title}</td>
                 <td className="p-4 text-gray-500">{article.category}</td>
                 <td className="p-4 flex gap-4">
-                  <button onClick={() => setPreviewArticle(article)} className="text-gray-600 hover:text-gray-900" title="Preview">
+                  <button onClick={() => handlePreview(article)} className="text-gray-600 hover:text-gray-900" title="Preview">
                     <Eye size={18} />
                   </button>
                   <Link to={`/edit/${article.id}`} className="text-blue-600 hover:text-blue-800" title="Edit">
