@@ -141,53 +141,54 @@ export default function ArticleEditor() {
     req.then(() => navigate("/manage")).catch(alert).finally(() => { });
   };
 
-  if (loading) return <div className="p-8">Loading…</div>;
+  if (loading) return <div className="flex h-screen items-center justify-center text-gray-400">Loading…</div>;
 
   /* ============ RENDER ============ */
   return (
     <div className="flex h-screen bg-gray-50">
       {/* EDITOR */}
-      <div className="w-full md:w-1/2 p-8 overflow-y-auto border-r">
-        <h1 className="text-2xl font-bold mb-6">
+      <div className="w-full md:w-1/2 p-8 overflow-y-auto border-r border-gray-200">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-8">
           {id ? "Edit Article" : "Create Article"}
         </h1>
 
         <Card>
-          <Input label="Title" value={article.title} onChange={(v) => setField("title", v)} />
-          <Input label="Subtitle" value={article.subtitle} onChange={(v) => setField("subtitle", v || null)} />
-          <Textarea label="Excerpt" value={article.excerpt} onChange={(v) => setField("excerpt", v || null)} />
+          <Input label="Title" value={article.title} onChange={(v) => setField("title", v)} placeholder="Article Title" />
+          <Input label="Subtitle" value={article.subtitle} onChange={(v) => setField("subtitle", v || null)} placeholder="Optional Subtitle" />
+          <Textarea label="Excerpt" value={article.excerpt} onChange={(v) => setField("excerpt", v || null)} placeholder="Short summary..." />
           <Select
             label="Category"
             value={article.category}
             options={['LaSTAR', 'CCI Invest', 'CCI Social']}
             onChange={(v) => setField("category", v || null)}
           />
-          <div className="mb-3">
-            <label className="text-xs text-gray-500">Hero URL</label>
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Hero Image</label>
             <div className="flex gap-2">
               <input
-                className="flex-1 border p-2 rounded"
+                className="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                 value={article.hero_url || ""}
                 onChange={(e) => setField("hero_url", e.target.value || null)}
+                placeholder="https://..."
               />
               <button
                 onClick={openHeroMedia}
-                className="px-3 text-xs bg-gray-100 rounded hover:bg-gray-200"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Open media
+                Select Media
               </button>
             </div>
           </div>
         </Card>
 
-        <Header title="Sections" action="Add section" onAction={addSection} />
+        <Header title="Content Sections" action="Add New Section" onAction={addSection} />
 
         {article.sections.map((section) => (
           <Card key={section.id}>
-            <div className="flex gap-2 mb-3">
+            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
               <input
-                className="flex-1 font-bold border-b outline-none"
-                placeholder="Section title"
+                className="flex-1 text-lg font-semibold text-gray-900 placeholder-gray-400 border-none focus:ring-0 p-0"
+                placeholder="Section Title"
                 value={section.title}
                 onChange={(e) =>
                   updateSections((s) =>
@@ -197,8 +198,8 @@ export default function ArticleEditor() {
                   )
                 }
               />
-              <IconBtn onClick={() => removeSection(section.id)}>
-                <Trash2 size={14} />
+              <IconBtn onClick={() => removeSection(section.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                <Trash2 size={18} />
               </IconBtn>
             </div>
 
@@ -212,21 +213,22 @@ export default function ArticleEditor() {
                 </IconBtn>
 
                 {["image", "video"].includes(block.type) ? (
-                  <>
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <Input
-                      label={`${block.type} URL`}
+                      label={`${block.type === 'image' ? 'Image' : 'Video'} Source URL`}
                       value={block.value}
                       onChange={(v) =>
                         updateBlock(section.id, block.id, v)
                       }
+                      placeholder="https://..."
                     />
                     <button
                       onClick={() => openMedia(section.id, block.id)}
-                      className="text-xs text-indigo-600"
+                      className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
                     >
-                      Open media library
+                      Browse Media Library &rarr;
                     </button>
-                  </>
+                  </div>
                 ) : (
                   <WysiwygInput
                     value={block.value}
@@ -244,9 +246,9 @@ export default function ArticleEditor() {
 
         <button
           onClick={save}
-          className="w-full mt-6 bg-indigo-600 text-white py-3 rounded font-bold"
+          className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 px-4 rounded-lg font-semibold shadow-md transition-all transform active:scale-[0.99]"
         >
-          {id ? "Update" : "Publish"}
+          {id ? "Save Changes" : "Publish Article"}
         </button>
       </div>
 
@@ -279,51 +281,57 @@ export default function ArticleEditor() {
   );
 }
 
-/* ================== UI HELPERS ================== */
+
 const Card = ({ children }) => (
-  <div className="bg-white p-4 rounded shadow-sm mb-6">{children}</div>
+  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 transition-shadow hover:shadow-md">{children}</div>
 );
 
 const Header = ({ title, action, onAction }) => (
-  <div className="flex justify-between mb-4">
-    <h2 className="font-semibold">{title}</h2>
-    <button onClick={onAction} className="text-sm bg-green-600 text-white px-3 py-1 rounded">
+  <div className="flex items-center justify-between mb-6">
+    <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+    <button
+      onClick={onAction}
+      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+    >
       {action}
     </button>
   </div>
 );
 
-const Input = ({ label, value, onChange }) => (
-  <div className="mb-3">
-    <label className="text-xs text-gray-500">{label}</label>
+const Input = ({ label, value, onChange, placeholder }) => (
+  <div className="mb-5">
+    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
     <input
-      className="w-full border p-2 rounded"
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
     />
   </div>
 );
 
-const Textarea = ({ label, value, onChange }) => (
-  <div className="mb-3">
-    <label className="text-xs text-gray-500">{label}</label>
+const Textarea = ({ label, value, onChange, placeholder }) => (
+  <div className="mb-5">
+    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
     <textarea
-      className="w-full border p-2 rounded"
+      rows={3}
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
     />
   </div>
 );
 
 const Select = ({ label, value, options, onChange }) => (
-  <div className="mb-3">
-    <label className="text-xs text-gray-500">{label}</label>
+  <div className="mb-5">
+    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
     <select
-      className="w-full border p-2 rounded bg-white"
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border bg-white"
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
     >
-      <option value="">Select...</option>
+      <option value="">Select an option...</option>
       {options.map((o) => (
         <option key={o} value={o}>
           {o}
@@ -334,20 +342,21 @@ const Select = ({ label, value, options, onChange }) => (
 );
 
 const IconBtn = ({ children, className = "", ...p }) => (
-  <button {...p} className={`text-red-500 ${className}`}>
+  <button {...p} className={`p-1 rounded-full hover:bg-gray-100 transition-colors ${className}`}>
     {children}
   </button>
 );
 
 const BlockBar = ({ onAdd }) => (
-  <div className="flex gap-2 flex-wrap mt-3">
+  <div className="flex gap-3 flex-wrap mt-4 pt-4 border-t border-gray-50">
+    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider py-1">Add Block:</span>
     {["text", "subtitle", "image", "video", "quote"].map((t) => (
       <button
         key={t}
         onClick={() => onAdd(t)}
-        className="bg-gray-100 px-2 py-1 rounded text-xs"
+        className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors border border-indigo-100"
       >
-        {t}
+        {t.charAt(0).toUpperCase() + t.slice(1)}
       </button>
     ))}
   </div>
