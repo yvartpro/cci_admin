@@ -44,7 +44,7 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
   return (
     <div>
       <div className="mb-3 flex items-center gap-2">
-        <button onClick={insertSelected} className="bg-indigo-600 text-white px-3 py-1 rounded text-sm">Insert Selected</button>
+        {false && <button onClick={insertSelected} className="bg-indigo-600 text-white px-3 py-1 rounded text-sm">Insert Selected</button>}
         <button onClick={load} className="bg-gray-100 px-3 py-1 rounded text-sm">Refresh</button>
       </div>
 
