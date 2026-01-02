@@ -80,8 +80,9 @@ export default function ArticleEditor() {
     updateSections((s) =>
       s.map((sec) =>
         sec.id === sid
-          ? {...sec, blocks: [...sec.blocks, { id: crypto.randomUUID(), type, value: "" }],
-        }: sec
+          ? {
+            ...sec, blocks: [...sec.blocks, { id: crypto.randomUUID(), type, value: "" }],
+          } : sec
       )
     );
 
@@ -89,7 +90,7 @@ export default function ArticleEditor() {
     updateSections((s) =>
       s.map((sec) =>
         sec.id === sid
-          ? {...sec, blocks: sec.blocks.map((block) => block.id === bid ? { ...block, value } : block )}
+          ? { ...sec, blocks: sec.blocks.map((block) => block.id === bid ? { ...block, value } : block) }
           : sec
       )
     );
@@ -137,7 +138,7 @@ export default function ArticleEditor() {
     console.log("Saving article:", article);
     const payload = { ...article, slug: createSlug(article.title) };
     const req = id ? updateArticle(id, payload) : createArticle(payload);
-    req.then(() => navigate("/manage")).catch(alert).finally(() => {});
+    req.then(() => navigate("/manage")).catch(alert).finally(() => { });
   };
 
   if (loading) return <div className="p-8">Loading…</div>;
@@ -155,7 +156,12 @@ export default function ArticleEditor() {
           <Input label="Title" value={article.title} onChange={(v) => setField("title", v)} />
           <Input label="Subtitle" value={article.subtitle} onChange={(v) => setField("subtitle", v || null)} />
           <Textarea label="Excerpt" value={article.excerpt} onChange={(v) => setField("excerpt", v || null)} />
-          <Input label="Category" value={article.category} onChange={(v) => setField("category", v || null)} />
+          <Select
+            label="Category"
+            value={article.category}
+            options={['LaSTAR', 'CCI Invest', 'CCI Social']}
+            onChange={(v) => setField("category", v || null)}
+          />
           <div className="mb-3">
             <label className="text-xs text-gray-500">Hero URL</label>
             <div className="flex gap-2">
@@ -306,6 +312,24 @@ const Textarea = ({ label, value, onChange }) => (
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
     />
+  </div>
+);
+
+const Select = ({ label, value, options, onChange }) => (
+  <div className="mb-3">
+    <label className="text-xs text-gray-500">{label}</label>
+    <select
+      className="w-full border p-2 rounded bg-white"
+      value={value || ""}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="">Select...</option>
+      {options.map((o) => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ))}
+    </select>
   </div>
 );
 
