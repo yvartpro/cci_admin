@@ -1,4 +1,5 @@
 const KEY = 'cci_admin_media_v1'
+import { deleteFile } from './api'
 
 const read = () => {
   try {
@@ -21,9 +22,7 @@ export const saveMediaEntry = (entry) => {
 }
 
 export const deleteMediaEntry = (id) => {
-  const items = read().filter(i => i.id !== id)
-  write(items)
-  return Promise.resolve()
+  return deleteFile(id)
 }
 
 export const clearMedia = () => {

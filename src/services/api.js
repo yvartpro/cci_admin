@@ -2,10 +2,10 @@ import axios from "axios";
 
 const api = axios.create({ baseURL: "http://localhost:5000/api" });
 
-export const getArticles = () => 
+export const getArticles = () =>
   api.get("/articles").then(res => res.data).catch(err => { throw err });
 
-export const getArticleById = (id) => 
+export const getArticleById = (id) =>
   api.get(`/articles/${id}`).then(res => res.data).catch(err => { throw err });
 
 export const createArticle = (data) =>
@@ -34,3 +34,6 @@ export const uploadLibraryFiles = (formData, config = {}) =>
 
 export const getFiles = (params = {}) =>
   api.get('/files', { params }).then(res => res.data).catch(err => { throw err })
+
+export const deleteFile = (id) =>
+  api.delete(`/files/${id}`).then(res => res.data).catch(err => { throw err });
