@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { UploadCloud } from 'lucide-react'
 import { uploadFiles, uploadArticleFiles, uploadLibraryFiles, getArticles } from '../services/api'
 import { saveMediaEntry } from '../services/mediaStore'
 
@@ -6,6 +7,7 @@ const MediaUploader = ({ onUploaded, articleId }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [progress, setProgress] = useState({}) // key: file name -> percent
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     getArticles().catch((err) => console.warn('failed to pre-load articles', err.message || err))
@@ -24,8 +26,8 @@ const MediaUploader = ({ onUploaded, articleId }) => {
       const fd = new FormData()
       fd.append('files', f)
       try {
-          const uploadFn = articleId ? (fd, cfg) => uploadArticleFiles(articleId, fd, cfg) : (fd, cfg) => uploadLibraryFiles(fd, cfg)
-          const res = await uploadFn(fd, {
+        const uploadFn = articleId ? (fd, cfg) => uploadArticleFiles(articleId, fd, cfg) : (fd, cfg) => uploadLibraryFiles(fd, cfg)
+        const res = await uploadFn(fd, {
           onUploadProgress: (e) => {
             const pct = e.total ? Math.round((e.loaded / e.total) * 100) : 0
             setProgress(prev => ({ ...prev, [f.name]: pct }))
@@ -58,7 +60,11 @@ const MediaUploader = ({ onUploaded, articleId }) => {
 
     // finished
     setLoading(false)
-    if (uploadedEntries.length) onUploaded && onUploaded(uploadedEntries)
+    if (uploadedEntries.length) {
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      setProgress({})
+      onUploaded && onUploaded(uploadedEntries)
+    }
   }
 
   // helper to fallback to data-URL previews
@@ -79,17 +85,37 @@ const MediaUploader = ({ onUploaded, articleId }) => {
   }
 
 
+  const triggerUpload = () => fileInputRef.current?.click()
+
   return (
-    <div className="bg-white p-4 rounded shadow-sm">
-      <label className="block text-sm font-medium text-gray-700 mb-2">Upload media</label>
-      <input type="file" multiple onChange={e => handleFiles(e.target.files)} className="mb-2" />
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+      <h3 className="font-semibold text-gray-900 mb-4">Upload New Media</h3>
+
+      <div
+        onClick={triggerUpload}
+        className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors group"
+      >
+        <div className="bg-indigo-100 p-3 rounded-full mb-3 group-hover:bg-indigo-200 transition-colors">
+          <UploadCloud size={24} className="text-indigo-600" />
+        </div>
+        <p className="text-sm font-medium text-gray-900">Click to upload files</p>
+        <p className="text-xs text-gray-500 mt-1">Images (PNG, JPG) or Videos (MP4)</p>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        className="hidden"
+        onChange={e => handleFiles(e.target.files)}
+      />
       {loading && <div className="text-sm text-gray-500">Uploading...</div>}
       {error && <div className="text-sm text-red-500">{error}</div>}
       <div className="mt-3 space-y-2">
         {Object.keys(progress).map(name => (
           <div key={name} className="text-xs">
             <div className="flex items-center justify-between"><span>{name}</span><span>{progress[name]}%</span></div>
-            <div className="w-full bg-gray-200 h-2 rounded mt-1"><div style={{ width: progress[name] + '%'}} className="bg-indigo-600 h-2 rounded"/></div>
+            <div className="w-full bg-gray-200 h-2 rounded mt-1"><div style={{ width: progress[name] + '%' }} className="bg-indigo-600 h-2 rounded" /></div>
           </div>
         ))}
       </div>
