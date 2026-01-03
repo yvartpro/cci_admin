@@ -81,7 +81,16 @@ export default function ArticleEditor() {
   const [article, setArticle] = useState(EMPTY_ARTICLE);
   const [loading, setLoading] = useState(false);
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState({});
   const [mediaCtx, setMediaCtx] = useState(null);
+
+  const collapseSection = (id) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
 
   /* ============ LOAD ============ */
   useEffect(() => {
@@ -253,7 +262,7 @@ export default function ArticleEditor() {
                         className="cursor-grab text-gray-400"
                         title="Drag section"
                       >
-                        ⋮⋮
+                        ⋮⋮⋮
                       </span>
 
                       <input
@@ -268,61 +277,70 @@ export default function ArticleEditor() {
                           )
                         }
                       />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => collapseSection(section.id)}
+                          className="text-xs text-indigo-600"
+                        >
+                          {collapsedSections[section.id] ? "Expand" : "Collapse"}
+                        </button>
 
-                      <IconBtn
-                        onClick={() => removeSection(section.id)}
-                        className="text-gray-400 hover:text-red-500"
-                      >
-                        <Trash2 size={18} />
-                      </IconBtn>
-                    </div>
-
-                    {/* BLOCKS (UNCHANGED) */}
-                    {section.blocks.map((block) => (
-                      <div key={block.id} className="mb-4 relative">
-                        <IconBtn
-                          className="absolute right-0 top-0"
-                          onClick={() => removeBlock(section.id, block.id)}
+                        <IconBtn onClick={() => removeSection(section.id)}
+                          className="text-gray-400 hover:text-red-500"
                         >
                           <Trash2 size={14} />
                         </IconBtn>
+                      </div>
+                    </div>
 
-                        {["image", "video"].includes(block.type) ? (
-                          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <Input
-                              label={`${block.type === 'image' ? 'Image' : 'Video'} Source URL`}
+                    {/* BLOCKS (UNCHANGED) */}
+                    {!collapsedSections[section.id] && (<>{
+                      section.blocks.map((block) => (
+                        <div key={block.id} className="mb-4 relative">
+                          <IconBtn
+                            className="absolute right-0 top-0"
+                            onClick={() => removeBlock(section.id, block.id)}
+                          >
+                            <Trash2 size={14} />
+                          </IconBtn>
+
+                          {["image", "video"].includes(block.type) ? (
+                            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                              <Input
+                                label={`${block.type === 'image' ? 'Image' : 'Video'} Source URL`}
+                                value={block.value}
+                                onChange={(v) =>
+                                  updateBlock(section.id, block.id, v)
+                                }
+                                placeholder="https://..."
+                              />
+                              <button
+                                onClick={() => openMedia(section.id, block.id)}
+                                className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                              >
+                                Browse Media Library →
+                              </button>
+                            </div>
+                          ) : (
+                            <WysiwygInput
                               value={block.value}
                               onChange={(v) =>
                                 updateBlock(section.id, block.id, v)
                               }
-                              placeholder="https://..."
                             />
-                            <button
-                              onClick={() => openMedia(section.id, block.id)}
-                              className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
-                            >
-                              Browse Media Library →
-                            </button>
-                          </div>
-                        ) : (
-                          <WysiwygInput
-                            value={block.value}
-                            onChange={(v) =>
-                              updateBlock(section.id, block.id, v)
-                            }
-                          />
-                        )}
-                      </div>
-                    ))}
+                          )}
+                        </div>
+                      ))}
+                      < BlockBar onAdd={(t) => addBlock(section.id, t)} />
+                    </>
+                    )}
 
-                    <BlockBar onAdd={(t) => addBlock(section.id, t)} />
                   </Card>
                 )}
               </SortableSection>
             ))}
           </SortableContext>
         </DndContext>
-
 
         <button
           onClick={save}
