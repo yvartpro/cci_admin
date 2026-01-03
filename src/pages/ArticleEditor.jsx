@@ -3,6 +3,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 
 import {
+  DndContext,
+  closestCenter
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove
+} from "@dnd-kit/sortable";
+
+import { CSS } from "@dnd-kit/utilities";
+
+import {
   createArticle,
   updateArticle,
   getArticleById,
@@ -33,6 +47,31 @@ const EMPTY_ARTICLE = {
   sections: [],
   version: 1,
 };
+
+/* ========== SORTABLE CONTENT ========== */
+
+const SortableSection = ({ id, children }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {children({ attributes, listeners })}
+    </div>
+  );
+};
+
+
 
 /* ================== COMPONENT ================== */
 export default function ArticleEditor() {
@@ -135,7 +174,6 @@ export default function ArticleEditor() {
 
   /* ============ SAVE ============ */
   const save = () => {
-    console.log("Saving article:", article);
     const payload = { ...article, slug: createSlug(article.title) };
     const req = id ? updateArticle(id, payload) : createArticle(payload);
     req.then(() => navigate("/manage")).catch(alert).finally(() => { });
@@ -183,66 +221,108 @@ export default function ArticleEditor() {
 
         <Header title="Content Sections" action="Add New Section" onAction={addSection} />
 
-        {article.sections.map((section) => (
-          <Card key={section.id}>
-            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
-              <input
-                className="flex-1 text-lg font-semibold text-gray-900 placeholder-gray-400 border-none focus:ring-0 p-0"
-                placeholder="Section Title"
-                value={section.title}
-                onChange={(e) =>
-                  updateSections((s) =>
-                    s.map((x) =>
-                      x.id === section.id ? { ...x, title: e.target.value } : x
-                    )
-                  )
-                }
-              />
-              <IconBtn onClick={() => removeSection(section.id)} className="text-gray-400 hover:text-red-500 transition-colors">
-                <Trash2 size={18} />
-              </IconBtn>
-            </div>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={({ active, over }) => {
+            if (!over || active.id === over.id) return;
 
-            {section.blocks.map((block) => (
-              <div key={block.id} className="mb-4 relative">
-                <IconBtn
-                  className="absolute right-0 top-0"
-                  onClick={() => removeBlock(section.id, block.id)}
-                >
-                  <Trash2 size={14} />
-                </IconBtn>
+            updateSections((sections) =>
+              arrayMove(
+                sections,
+                sections.findIndex(s => s.id === active.id),
+                sections.findIndex(s => s.id === over.id)
+              )
+            );
+          }}
+        >
+          <SortableContext
+            items={article.sections.map(s => s.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {article.sections.map((section) => (
+              <SortableSection key={section.id} id={section.id}>
+                {({ attributes, listeners }) => (
+                  <Card>
+                    {/* SECTION HEADER */}
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
 
-                {["image", "video"].includes(block.type) ? (
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <Input
-                      label={`${block.type === 'image' ? 'Image' : 'Video'} Source URL`}
-                      value={block.value}
-                      onChange={(v) =>
-                        updateBlock(section.id, block.id, v)
-                      }
-                      placeholder="https://..."
-                    />
-                    <button
-                      onClick={() => openMedia(section.id, block.id)}
-                      className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
-                    >
-                      Browse Media Library &rarr;
-                    </button>
-                  </div>
-                ) : (
-                  <WysiwygInput
-                    value={block.value}
-                    onChange={(v) =>
-                      updateBlock(section.id, block.id, v)
-                    }
-                  />
+                      {/* DRAG HANDLE */}
+                      <span
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-grab text-gray-400"
+                        title="Drag section"
+                      >
+                        ⋮⋮
+                      </span>
+
+                      <input
+                        className="flex-1 text-lg font-semibold text-gray-900 placeholder-gray-400 border-none focus:ring-0 p-0"
+                        placeholder="Section Title"
+                        value={section.title}
+                        onChange={(e) =>
+                          updateSections((s) =>
+                            s.map((x) =>
+                              x.id === section.id ? { ...x, title: e.target.value } : x
+                            )
+                          )
+                        }
+                      />
+
+                      <IconBtn
+                        onClick={() => removeSection(section.id)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <Trash2 size={18} />
+                      </IconBtn>
+                    </div>
+
+                    {/* BLOCKS (UNCHANGED) */}
+                    {section.blocks.map((block) => (
+                      <div key={block.id} className="mb-4 relative">
+                        <IconBtn
+                          className="absolute right-0 top-0"
+                          onClick={() => removeBlock(section.id, block.id)}
+                        >
+                          <Trash2 size={14} />
+                        </IconBtn>
+
+                        {["image", "video"].includes(block.type) ? (
+                          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <Input
+                              label={`${block.type === 'image' ? 'Image' : 'Video'} Source URL`}
+                              value={block.value}
+                              onChange={(v) =>
+                                updateBlock(section.id, block.id, v)
+                              }
+                              placeholder="https://..."
+                            />
+                            <button
+                              onClick={() => openMedia(section.id, block.id)}
+                              className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                            >
+                              Browse Media Library →
+                            </button>
+                          </div>
+                        ) : (
+                          <WysiwygInput
+                            value={block.value}
+                            onChange={(v) =>
+                              updateBlock(section.id, block.id, v)
+                            }
+                          />
+                        )}
+                      </div>
+                    ))}
+
+                    <BlockBar onAdd={(t) => addBlock(section.id, t)} />
+                  </Card>
                 )}
-              </div>
+              </SortableSection>
             ))}
+          </SortableContext>
+        </DndContext>
 
-            <BlockBar onAdd={(t) => addBlock(section.id, t)} />
-          </Card>
-        ))}
 
         <button
           onClick={save}
