@@ -80,8 +80,9 @@ const ArticlePreview = ({ data }) => {
                     dangerouslySetInnerHTML={{ __html: block.value }}
                   />
                 );
-
               case 'image':
+                if (!block.value) return null;
+
                 return (
                   <img
                     key={block.id}
@@ -92,6 +93,8 @@ const ArticlePreview = ({ data }) => {
                 );
 
               case 'video':
+                if (!block.value) return null;
+
                 return (
                   <div key={block.id} className="aspect-video my-10">
                     <iframe
@@ -101,6 +104,7 @@ const ArticlePreview = ({ data }) => {
                     />
                   </div>
                 );
+
 
               default:
                 return null;

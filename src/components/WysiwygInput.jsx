@@ -14,17 +14,20 @@ const modules = {
 };
 
 const formats = [
-  'bold', 'italic', 'underline',
-  'list', 'bullet'
+  'bold',
+  'italic',
+  'underline',
+  'list'
 ];
+
 
 const WysiwygInput = ({ value, onChange, placeholder }) => {
   return (
     <div className="bg-white rounded-md border border-gray-200 overflow-hidden">
-      <ReactQuill 
-        theme="snow" 
-        value={value || ''} 
-        onChange={onChange} 
+      <ReactQuill
+        theme="snow"
+        value={value || ''}
+        onChange={onChange}
         modules={modules}
         formats={formats}
         placeholder={placeholder || "Start writing..."}
