@@ -4,6 +4,8 @@ import Dashboard from './pages/Dashboard';
 import ArticleEditor from './pages/ArticleEditor';
 import ManageArticles from './pages/ManageArticles';
 import MediaLibrary from './pages/MediaLibrary';
+import VolunteerEditor from './pages/VolunteerEditor';
+import ManageVolunteers from './pages/ManageVolunteers';
 
 function App() {
   return (
@@ -19,6 +21,9 @@ function App() {
           <Route path="/media" element={<MediaLibrary />} />
           <Route path="/manage" element={<ManageArticles />} />
           <Route path="/edit/:id" element={<ArticleEditor />} />
+          <Route path="/volunteers" element={<ManageVolunteers />} />
+          <Route path="/volunteers/new" element={<VolunteerEditor />} />
+          <Route path="/volunteers/edit/:id" element={<VolunteerEditor />} />
         </Routes>
       </main>
     </div>

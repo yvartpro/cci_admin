@@ -37,3 +37,24 @@ export const getFiles = (params = {}) =>
 
 export const deleteFile = (id) =>
   api.delete(`/files/${id}`).then(res => res.data).catch(err => { throw err });
+
+// Volunteer API functions
+export const getVolunteers = () =>
+  api.get("/volunteers").then(res => res.data).catch(err => { throw err });
+
+export const getVolunteerById = (id) =>
+  api.get(`/volunteers/${id}`).then(res => res.data).catch(err => { throw err });
+
+export const createVolunteer = (data) =>
+  api.post("/volunteers", data).then(res => res.data).catch(err => { throw err });
+
+export const updateVolunteer = (id, data) =>
+  api.patch(`/volunteers/${id}`, data).then(res => res.data).catch(err => { throw err });
+
+export const deleteVolunteer = (id) =>
+  api.delete(`/volunteers/${id}`).then(res => res.data).catch(err => { throw err });
+
+export const uploadVolunteerFiles = (volunteerId, formData, config = {}) =>
+  api.post(`/volunteers/${volunteerId}/files`, formData, { headers: { 'Content-Type': 'multipart/form-data' }, ...config })
+    .then(res => res.data)
+    .catch(err => { throw err });

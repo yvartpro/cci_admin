@@ -2,7 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* article.css */
+/* ========== ARTICLE / PROSE STYLES ========== */
+.article-prose {
+  white-space: normal;
+  /* allow line breaks */
+  word-break: break-word;
+  /* break long words if needed */
+  overflow-wrap: anywhere;
+  /* break anywhere, including &nbsp; */
+  line-height: 1.7;
+}
+
 .article-prose h2 {
   @apply text-3xl font-extrabold text-slate-900 mt-12 mb-4;
 }
@@ -13,6 +23,7 @@
 
 .article-prose p {
   @apply text-slate-600 leading-relaxed mb-6;
+  margin: 0.75rem 0;
 }
 
 .article-prose blockquote {
@@ -21,11 +32,6 @@
 
 .article-prose img {
   @apply rounded-2xl shadow-lg my-8;
-}
-
-.article-prose {
-  white-space: normal;
-  word-break: break-word;
 }
 
 .article-prose ul {
@@ -44,23 +50,36 @@
   margin: 0.25rem 0;
 }
 
-.article-prose p {
-  margin: 0.75rem 0;
-}
-
 .article-prose br {
   display: block;
   margin-bottom: 0.4rem;
   content: "";
 }
+
 .article-prose a {
   @apply text-indigo-600 underline;
+  word-break: break-all;
+  /* ensure long links break */
 }
+
 .article-prose a:hover {
   @apply text-indigo-800;
 }
-.wysiwyg {
-  white-space: pre-wrap;
+
+/* ========== WYSIWYG EDITOR STYLES ========== */
+.wysiwyg,
+.ql-editor {
+  white-space: normal;
+  /* allow line breaks */
   word-break: break-word;
+  /* break long words */
+  overflow-wrap: anywhere;
+  /* break anywhere including &nbsp; */
   line-height: 1.7;
+}
+
+.wysiwyg a,
+.ql-editor a {
+  word-break: break-all;
+  /* force links to wrap */
 }
