@@ -55,7 +55,7 @@ const ManageArticles = () => {
                   <button onClick={() => handlePreview(article)} className="text-gray-600 hover:text-gray-900" title="Preview">
                     <Eye size={18} />
                   </button>
-                  <Link to={`/edit/${article.id}`} className="text-blue-600 hover:text-blue-800" title="Edit">
+                  <Link to={`/cci/edit/${article.id}`} className="text-blue-600 hover:text-blue-800" title="Edit">
                     <Edit size={18} />
                   </Link>
                   <button onClick={() => handleDelete(article.id)} className="text-red-600 hover:text-red-800">

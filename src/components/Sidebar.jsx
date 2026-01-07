@@ -4,11 +4,11 @@ import { LayoutDashboard, FilePlus, Files, Users } from 'lucide-react';
 const Sidebar = () => {
   const { pathname } = useLocation();
   const nav = [
-    { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
-    { name: 'Create Article', path: '/create', icon: <FilePlus size={20} /> },
-    { name: 'Manage Articles', path: '/manage', icon: <Files size={20} /> },
-    { name: 'Manage Volunteers', path: '/volunteers', icon: <Users size={20} /> },
-    { name: 'Media Library', path: '/media', icon: <Files size={20} /> },
+    { name: 'Dashboard', path: '/cci', icon: <LayoutDashboard size={20} /> },
+    { name: 'Create Article', path: '/cci/create', icon: <FilePlus size={20} /> },
+    { name: 'Manage Articles', path: '/cci/manage', icon: <Files size={20} /> },
+    { name: 'Manage Volunteers', path: '/cci/volunteers', icon: <Users size={20} /> },
+    { name: 'Media Library', path: '/cci/media', icon: <Files size={20} /> },
   ];
 
   return (
