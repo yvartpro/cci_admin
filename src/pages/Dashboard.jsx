@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getArticles, getVolunteers } from "../services/api";
+import { getArticles } from "../services/articles.api";
+import { getVolunteers } from "../services/volunteers.api";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";

@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
 import { listMedia, deleteMediaEntry } from '../services/mediaStore'
-import { getFiles } from '../services/api'
+import { getFiles } from '../services/files.api'
+import { LoadingSpinner } from './LoadingSpinner'
 
 const MediaGrid = ({ onSelect, refreshKey }) => {
   const [items, setItems] = useState([])
   const [selected, setSelected] = useState(new Set())
+  const [loading, setLoading] = useState(true)
 
   const load = async () => {
     try {
+      setLoading(true)
       // fetch server files and local entries, but only display server-backed items
       const files = await getFiles().catch(err => console.error(err)) //Promise.all([getFiles().catch(() => []), listMedia().catch(() => [])])
       const serverItems = files.map(s => ({
@@ -21,6 +24,8 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
       setItems(serverItems)
     } catch (err) {
       listMedia().then(setItems)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -41,7 +46,7 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
     if (chosen.length && onSelect) onSelect(chosen)
   }
 
-  return (
+  return loading ? <LoadingSpinner txt="media" /> : (
     <div>
       <div className="mb-3 flex items-center gap-2">
         {false && <button onClick={insertSelected} className="bg-indigo-600 text-white px-3 py-1 rounded text-sm">Insert Selected</button>}

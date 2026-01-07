@@ -6,7 +6,7 @@ import {
     createVolunteer,
     updateVolunteer,
     getVolunteerById,
-} from "../services/api";
+} from "../services/volunteers.api";
 
 import WysiwygInput from "../components/WysiwygInput";
 import VolunteerPreview from "../components/VolunteerPreview";
@@ -67,7 +67,7 @@ export default function VolunteerEditor() {
     const save = () => {
         const payload = { ...volunteer };
         const req = id ? updateVolunteer(id, payload) : createVolunteer(payload);
-        req.then(() => navigate("/volunteers")).catch(alert).finally(() => { });
+        req.then(() => navigate("/cci/volunteers")).catch(alert).finally(() => { });
     };
 
     if (loading) return <div className="flex h-screen items-center justify-center text-gray-400">Loading…</div>;

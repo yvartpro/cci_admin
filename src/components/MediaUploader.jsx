@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { UploadCloud } from 'lucide-react'
-import { uploadFiles, uploadArticleFiles, uploadLibraryFiles, getArticles } from '../services/api'
+import { getArticles, uploadArticleFiles } from '../services/articles.api'
+import { uploadLibraryFiles } from '../services/files.api'
 import { saveMediaEntry } from '../services/mediaStore'
 
 const MediaUploader = ({ onUploaded, articleId }) => {

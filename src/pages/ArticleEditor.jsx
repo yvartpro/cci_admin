@@ -20,7 +20,7 @@ import {
   createArticle,
   updateArticle,
   getArticleById,
-} from "../services/api";
+} from "../services/articles.api";
 
 import WysiwygInput from "../components/WysiwygInput";
 import ArticlePreview from "../components/ArticlePreview";
@@ -101,7 +101,6 @@ export default function ArticleEditor() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
-  console.log(id)
   /* ============ HELPERS ============ */
   const setField = (key, value) => setArticle((article) => ({ ...article, [key]: value }));
   const updateSections = (fn) =>
@@ -185,7 +184,7 @@ export default function ArticleEditor() {
   const save = () => {
     const payload = { ...article, slug: createSlug(article.title) };
     const req = id ? updateArticle(id, payload) : createArticle(payload);
-    req.then(() => navigate("/manage")).catch(alert).finally(() => { });
+    req.then(() => navigate("/cci/manage")).catch(alert).finally(() => { });
   };
   console.log(article)
 

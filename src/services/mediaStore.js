@@ -1,5 +1,5 @@
 const KEY = 'cci_admin_media_v1'
-import { deleteFile } from './api'
+import { deleteFile } from './files.api'
 
 const read = () => {
   try {

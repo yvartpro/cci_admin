@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Eye, X, Plus } from 'lucide-react';
-import { getVolunteers, deleteVolunteer, getVolunteerById } from '../services/api';
+import { getVolunteers, deleteVolunteer, getVolunteerById } from '../services/volunteers.api';
 import VolunteerPreview from '../components/VolunteerPreview';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 const ManageVolunteers = () => {
   const [volunteers, setVolunteers] = useState([]);
@@ -64,12 +65,7 @@ const ManageVolunteers = () => {
         </Link>
       </div>
 
-      {loading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="text-gray-500 mt-4">Loading volunteers...</p>
-        </div>
-      ) : (
+      {loading ? <LoadingSpinner txt="volunteers" /> : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="w-full text-left">
             <thead className="bg-gray-50 border-b">
