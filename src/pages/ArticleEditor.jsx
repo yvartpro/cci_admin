@@ -101,7 +101,7 @@ export default function ArticleEditor() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
-
+  console.log(id)
   /* ============ HELPERS ============ */
   const setField = (key, value) => setArticle((article) => ({ ...article, [key]: value }));
   const updateSections = (fn) =>
@@ -187,6 +187,7 @@ export default function ArticleEditor() {
     const req = id ? updateArticle(id, payload) : createArticle(payload);
     req.then(() => navigate("/manage")).catch(alert).finally(() => { });
   };
+  console.log(article)
 
   if (loading) return <div className="flex h-screen items-center justify-center text-gray-400">Loading…</div>;
 

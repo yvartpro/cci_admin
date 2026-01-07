@@ -17,7 +17,7 @@ const ManageArticles = () => {
         { id: '1', title: 'Sample Article', category: 'Tech', updatedAt: '2025-12-29' }
       ]));
   }, []);
-
+  console.log(articles)
   const handleDelete = (id) => {
     if (confirm('Delete this article?')) {
       deleteArticle(id).then(() => setArticles(articles.filter(a => a.id !== id)));
