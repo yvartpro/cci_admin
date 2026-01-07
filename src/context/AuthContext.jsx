@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react"
 export const AuthContext = createContext()
 import { useAppContext } from "./AppContext"
-import axios from "axios"
+import api from "../services/apiClient"
 
 
 export const AuthProvider = ({ children }) => {
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false)
       return
     }
-    axios.get(`${API_URL}/user/me`, {
+    api.get(`api/user/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
 
   // login with axios
   const login = async (email, password) => {
-    const res = await axios.post(`${API_URL}/auth/login`, { email, password })
+    const res = await api.post(`/login`, { email, password })
     const data = res.data
 
     if (data.error) {

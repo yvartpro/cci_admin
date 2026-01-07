@@ -1,14 +1,17 @@
-import React, { useState } from "react";
-import { AtSign, Lock, Shield, UserCheck, UserCog } from "lucide-react";
+import { useState } from "react";
+import { AtSign, Eye, EyeOff, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 import { Users, ListOrdered } from "lucide-react";
+import { ButtonLoadingSpinner } from "../components/LoadingSpinner";
 
 export default function Login() {
   const navigate = useNavigate();
   const { error, setError } = useAppContext();
   const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const [form, setForm] = useState({
     email: "",
@@ -27,18 +30,20 @@ export default function Login() {
       return;
     }
 
+    setLoading(true)
     login(form.email, form.password)
       .then(() => {
-        navigate("/");
+        navigate("/cci");
       })
       .catch((err) => {
         console.error("Erreur lors de la connexion :", err);
         setError("Email ou mot de passe incorrect.");
-      });
+      })
+      .finally(() => setLoading(false))
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 px-4 py-6 overflow-y-auto">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 mx-auto mt-4 mb-10">
         {/* Logo & Title */}
         <div className="text-center mb-8">
@@ -71,13 +76,18 @@ export default function Login() {
           <div className="relative">
             <Lock className="absolute top-3 left-3 text-gray-500 h-5 w-5" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Mot de passe"
               value={form.password}
               onChange={handleChange}
-              className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none"
+              className="w-full pl-10 pr-10 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none"
             />
+            {showPassword ? (
+              <Eye className="absolute top-3 right-3 text-gray-500 h-5 w-5 cursor-pointer" onClick={() => setShowPassword(!showPassword)} />
+            ) : (
+              <EyeOff className="absolute top-3 right-3 text-gray-500 h-5 w-5 cursor-pointer" onClick={() => setShowPassword(!showPassword)} />
+            )}
           </div>
 
           {/* show error message */}
@@ -90,20 +100,20 @@ export default function Login() {
           {/* Submit */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-700 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all"
           >
-            Se connecter
+            {loading ? <ButtonLoadingSpinner /> : "Se connecter"}
           </button>
         </form>
 
         {/* Link to Register */}
         <p className="text-center mt-4 text-sm text-gray-600 pb-4">
-          Pas encore de compte ?
+          Pas encore de compte ?{" "}
           <span
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/cci/register")}
             className="text-blue-700 font-medium cursor-pointer hover:underline"
           >
-            {" "}
             Créer un compte
           </span>
         </p>

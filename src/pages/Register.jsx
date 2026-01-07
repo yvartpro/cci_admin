@@ -1,16 +1,18 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { AtSign, Lock, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
-import axios from "axios";
 import { Users, ListOrdered } from "lucide-react";
+import api from "../services/apiClient";
+import { ButtonLoadingSpinner } from "../components/LoadingSpinner";
 
 
 export default function Register() {
-  const { API_URL, error, setError } = useAppContext();
+  const { error, setError } = useAppContext();
   const navigate = useNavigate();
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -33,7 +35,8 @@ export default function Register() {
       setError("Les mots de passe ne correspondent pas.");
       return;
     }
-    axios.post(`${API_URL}/user/create`, form)
+    setLoading(true)
+    api.post(`/user`, form)
       .then((response) => {
         console.log("Inscription réussie :", response.data);
         navigate("/login");
@@ -41,7 +44,8 @@ export default function Register() {
       .catch((error) => {
         console.error("Erreur lors de l'inscription :", error);
         setError("Erreur lors de l'inscription. Veuillez réessayer.");
-      });
+      })
+      .finally(() => setLoading(false))
   };
 
   return (
@@ -124,20 +128,20 @@ export default function Register() {
           {/* Submit */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-700 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all"
           >
-            S'inscrire
+            {loading ? <ButtonLoadingSpinner /> : "S'inscrire"}
           </button>
         </form>
 
         {/* Login Link */}
         <p className="text-center mt-4 text-sm text-gray-600">
-          Déjà un compte ?
+          Déjà un compte ?{" "}
           <span
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/cci/login")}
             className="text-blue-700 font-medium cursor-pointer hover:underline"
           >
-            {" "}
             Se connecter
           </span>
         </p>
