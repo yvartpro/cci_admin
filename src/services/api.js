@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "http://localhost:5000/api" });
+const api = axios.create({ baseURL: "https://capbio.bi/cci/api" });
 
 export const getArticles = () =>
   api.get("/articles").then(res => res.data).catch(err => { throw err });
