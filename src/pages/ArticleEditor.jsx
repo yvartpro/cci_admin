@@ -324,9 +324,12 @@ export default function ArticleEditor() {
                           ) : (
                             <WysiwygInput
                               value={block.value}
-                              onChange={(v) =>
-                                updateBlock(section.id, block.id, v)
-                              }
+                              onChange={(v) => {
+                                const normalized = v.replace(/&nbsp;/g, ' ');
+                                if (normalized !== block.value) {
+                                  updateBlock(section.id, block.id, normalized);
+                                }
+                              }}
                             />
                           )}
                         </div>
