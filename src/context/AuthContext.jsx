@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   const [user, setUser] = useState(null)
-  const [token, setToken] = useState(sessionStorage.getItem("token") || null)
+  const [token, setToken] = useState(localStorage.getItem("token") || null)
 
   // fetch user profile when token changes
   useEffect(() => {
@@ -17,19 +17,20 @@ export const AuthProvider = ({ children }) => {
       setLoading(false)
       return
     }
-    api.get(`api/user/login`, {
+    api.get(`/user/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
       .then(res => {
+        console.log(res.data)
         setUser(res.data)
       })
       .catch(err => {
         console.error(err?.response?.data || err.message)
         setUser(null)
         setToken(null)
-        sessionStorage.removeItem("token")
+        localStorage.removeItem("token")
       })
       .finally(() => {
         setLoading(false)
@@ -38,21 +39,28 @@ export const AuthProvider = ({ children }) => {
 
   // login with axios
   const login = async (email, password) => {
-    const res = await api.post(`/login`, { email, password })
-    const data = res.data
-
-    if (data.error) {
-      throw new Error(data.error)
-    }
-    setToken(data.token)
-    sessionStorage.setItem("token", data.token)
-    setUser(data.user)
+    setLoading(true)
+    api.post(`/user/login`, { email, password })
+      .then(res => {
+        setUser(res.data.user)
+        setToken(res.data.token)
+        localStorage.setItem("token", res.data.token)
+      })
+      .catch(err => {
+        console.error(err?.response?.data || err.message)
+        setUser(null)
+        setToken(null)
+        localStorage.removeItem("token")
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const logout = () => {
     setUser(null)
     setToken(null)
-    sessionStorage.removeItem("token")
+    localStorage.removeItem("token")
   }
 
   return (
