@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "CCI_ADMIN",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

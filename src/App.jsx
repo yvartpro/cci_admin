@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import ArticleEditor from './pages/ArticleEditor';
@@ -11,9 +11,12 @@ import Register from './pages/Register';
 import ProtectedRoute from './ProtectedRoute';
 
 function App() {
+  const location = useLocation();
+  const hideSidebar = location.pathname === '/cci/login' || location.pathname === '/cci/register';
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {window.location.pathname !== '/cci/login' && window.location.pathname !== '/cci/register' && <Sidebar />}
+      {!hideSidebar && <Sidebar />}
 
       <main className="flex-1">
         <Routes>

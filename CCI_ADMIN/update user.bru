@@ -1,0 +1,26 @@
+meta {
+  name: update user
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{base_url}}user/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "fullName":"Yves Bucana"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

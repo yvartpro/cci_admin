@@ -1,0 +1,20 @@
+meta {
+  name: delete user
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{base_url}}user/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

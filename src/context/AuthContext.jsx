@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false)
       return
     }
-    api.get(`api/user/me`, {
+    api.get(`api/user/login`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
