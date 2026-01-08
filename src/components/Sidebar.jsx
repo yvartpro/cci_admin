@@ -1,14 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FilePlus, Files, Users } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Files, Users, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const { pathname } = useLocation();
+  const { logout } = useAuth();
   const nav = [
     { name: 'Dashboard', path: '/cci', icon: <LayoutDashboard size={20} /> },
     { name: 'Create Article', path: '/cci/create', icon: <FilePlus size={20} /> },
     { name: 'Manage Articles', path: '/cci/manage', icon: <Files size={20} /> },
     { name: 'Manage Volunteers', path: '/cci/volunteers', icon: <Users size={20} /> },
     { name: 'Media Library', path: '/cci/media', icon: <Files size={20} /> },
+    { name: "Logout", path: '/cci/logout', icon: <LogOut size={20} />, onClick: logout },
   ];
 
   return (
@@ -19,6 +22,7 @@ const Sidebar = () => {
           <Link
             key={item.path}
             to={item.path}
+            onClick={item.onClick}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${pathname === item.path ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-slate-800'}`}
           >
             {item.icon} {item.name}

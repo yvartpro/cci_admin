@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
       }
     })
       .then(res => {
-        console.log(res.data)
         setUser(res.data)
       })
       .catch(err => {
