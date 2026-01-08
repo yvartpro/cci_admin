@@ -53,7 +53,7 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-bold text-gray-800">Connexion</h1>
           <p className="text-gray-500 text-sm">
-            Accédez au système de file d’attente de l'Hôpital
+            Accédez au système de gestion des articles
           </p>
         </div>
 

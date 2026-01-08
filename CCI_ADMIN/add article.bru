@@ -1,0 +1,58 @@
+meta {
+  name: add article
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{base_url}}articles
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "L'innovation Technologique au Burundi en 2026",
+    "category": "CCI Invest",
+    "subtitle": "Un aperçu des avancées numériques locales",
+    "slug": "innovation-technologique-burundi-2026",
+    "excerpt": "Cet article explore comment les nouvelles technologies transforment le paysage économique burundais cette année.",
+    "sections": [
+      {
+        "type": "text",
+        "content": "Le secteur numérique connaît une croissance sans précédent..."
+      },
+      {
+        "type": "image",
+        "url": "https://example.com/images/tech-hub.jpg",
+        "caption": "Un hub technologique à Bujumbura"
+      }
+    ],
+    "hero_url": "http://capbio.bi/cci/uploads/opt_upload_1767691071285_273271.JPG.jpg",
+    "hero_file_id": 5,
+    "tags": ["Technologie", "Investissement", "Burundi", "2026"],
+    "meta": {
+      "og_title": "Innovation au Burundi - 2026",
+      "og_description": "Découvrez les secteurs porteurs en 2026.",
+      "robots": "index, follow"
+    },
+    "status": "published",
+    "published_at": "2026-01-08 09:23:00",
+    "author_name": "Jean-Luc Nkurunziza",
+    "language": "fr",
+    "reading_time": 5,
+    "views_count": 0,
+    "version": 1,
+    "featured": 1
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

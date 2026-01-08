@@ -59,7 +59,7 @@ export default function Register() {
           </div>
           <h1 className="text-2xl font-bold text-gray-800">Créer un compte</h1>
           <p className="text-gray-500 text-sm">
-            Inscrivez-vous pour accéder au système de file d'attente
+            Créer un compte pour accéder au système de gestion des articles
           </p>
         </div>
 

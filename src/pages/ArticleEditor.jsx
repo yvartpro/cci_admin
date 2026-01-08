@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Trash2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 import {
   DndContext,
@@ -26,6 +27,7 @@ import WysiwygInput from "../components/WysiwygInput";
 import ArticlePreview from "../components/ArticlePreview";
 import MediaGrid from "../components/MediaGrid";
 import { createSlug } from "../services/helper";
+import { ButtonLoadingSpinner } from "../components/LoadingSpinner";
 
 /* ================== CONSTANT ================== */
 const EMPTY_ARTICLE = {
@@ -83,6 +85,8 @@ export default function ArticleEditor() {
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [mediaCtx, setMediaCtx] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const { user } = useAuth();
 
   const collapseSection = (id) => {
     setCollapsedSections(prev => ({
@@ -104,7 +108,7 @@ export default function ArticleEditor() {
   /* ============ HELPERS ============ */
   const setField = (key, value) => setArticle((article) => ({ ...article, [key]: value }));
   const updateSections = (fn) =>
-    setArticle((article) => ({ ...article, sections: fn(article.sections) }));
+    setArticle((article) => ({ ...article, author_name: user?.name, sections: fn(article.sections) }));
 
   const openHeroMedia = () => {
     setMediaCtx({ type: "hero" });
@@ -182,11 +186,11 @@ export default function ArticleEditor() {
 
   /* ============ SAVE ============ */
   const save = () => {
+    setSaving(true);
     const payload = { ...article, slug: createSlug(article.title) };
     const req = id ? updateArticle(id, payload) : createArticle(payload);
-    req.then(() => navigate("/cci/manage")).catch(alert).finally(() => { });
+    req.then(() => navigate("/cci/manage")).catch(alert).finally(() => setSaving(false));
   };
-  console.log(article)
 
   if (loading) return <div className="flex h-screen items-center justify-center text-gray-400">Loading…</div>;
 
@@ -347,9 +351,10 @@ export default function ArticleEditor() {
 
         <button
           onClick={save}
+          disabled={saving}
           className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 px-4 rounded-lg font-semibold shadow-md transition-all transform active:scale-[0.99]"
         >
-          {id ? "Save Changes" : "Publish Article"}
+          {saving ? <ButtonLoadingSpinner text="Saving..." /> : id ? "Save Changes" : "Publish Article"}
         </button>
       </div>
 
