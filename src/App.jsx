@@ -20,14 +20,14 @@ function App() {
 
       <main className="flex-1">
         <Routes>
-          <Route path="/cci" element={<ProtectedRoute allowedRoles={[]}><Dashboard /></ProtectedRoute>} />
-          <Route path="/cci/create" element={<ProtectedRoute allowedRoles={[]}><ArticleEditor /></ProtectedRoute>} />
-          <Route path="/cci/media" element={<ProtectedRoute allowedRoles={[]}><MediaLibrary /></ProtectedRoute>} />
-          <Route path="/cci/manage" element={<ProtectedRoute allowedRoles={[]}><ManageArticles /></ProtectedRoute>} />
-          <Route path="/cci/edit/:id" element={<ProtectedRoute allowedRoles={[]}><ArticleEditor /></ProtectedRoute>} />
-          <Route path="/cci/volunteers" element={<ProtectedRoute allowedRoles={[]}><ManageVolunteers /></ProtectedRoute>} />
-          <Route path="/cci/volunteers/new" element={<ProtectedRoute allowedRoles={[]}><VolunteerEditor /></ProtectedRoute>} />
-          <Route path="/cci/volunteers/edit/:id" element={<ProtectedRoute allowedRoles={[]}><VolunteerEditor /></ProtectedRoute>} />
+          <Route path="/cci" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><Dashboard /></ProtectedRoute>} />
+          <Route path="/cci/create" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><ArticleEditor /></ProtectedRoute>} />
+          <Route path="/cci/media" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><MediaLibrary /></ProtectedRoute>} />
+          <Route path="/cci/manage" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><ManageArticles /></ProtectedRoute>} />
+          <Route path="/cci/edit/:id" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><ArticleEditor /></ProtectedRoute>} />
+          <Route path="/cci/volunteers" element={<ProtectedRoute allowedRoles={["admin"]}><ManageVolunteers /></ProtectedRoute>} />
+          <Route path="/cci/volunteers/new" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
+          <Route path="/cci/volunteers/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
           <Route path="/cci/login" element={<Login />} />
           <Route path="/cci/register" element={<Register />} />
         </Routes>
