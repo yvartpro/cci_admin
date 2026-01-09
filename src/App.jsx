@@ -9,6 +9,8 @@ import ManageVolunteers from './pages/ManageVolunteers';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProtectedRoute from './ProtectedRoute';
+import CarouselEditor from './pages/CarouselEditor';
+import ManageCarousels from './pages/ManageCarousels';
 
 function App() {
   const location = useLocation();
@@ -28,6 +30,9 @@ function App() {
           <Route path="/cci/volunteers" element={<ProtectedRoute allowedRoles={["admin"]}><ManageVolunteers /></ProtectedRoute>} />
           <Route path="/cci/volunteers/new" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
           <Route path="/cci/volunteers/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
+          <Route path="/cci/carousel" element={<ProtectedRoute allowedRoles={["admin"]}><ManageCarousels /></ProtectedRoute>} />
+          <Route path="/cci/carousel/new" element={<ProtectedRoute allowedRoles={["admin"]}><CarouselEditor /></ProtectedRoute>} />
+          <Route path="/cci/carousel/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><CarouselEditor /></ProtectedRoute>} />
           <Route path="/cci/login" element={<Login />} />
           <Route path="/cci/register" element={<Register />} />
         </Routes>

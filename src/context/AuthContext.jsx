@@ -39,17 +39,21 @@ export const AuthProvider = ({ children }) => {
   // login with axios
   const login = async (email, password) => {
     setLoading(true)
-    api.post(`/user/login`, { email, password })
+    return api.post(`/user/login`, { email, password })
       .then(res => {
         setUser(res.data.user)
         setToken(res.data.token)
         localStorage.setItem("token", res.data.token)
+
+        return res.data
       })
       .catch(err => {
         console.error(err?.response?.data || err.message)
         setUser(null)
         setToken(null)
         localStorage.removeItem("token")
+
+        throw err
       })
       .finally(() => {
         setLoading(false)

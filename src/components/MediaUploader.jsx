@@ -90,7 +90,7 @@ const MediaUploader = ({ onUploaded, articleId }) => {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
-      <h3 className="font-semibold text-gray-900 mb-4">Upload New Media</h3>
+      <h3 className="font-semibold text-gray-900 mb-4">Telecharger</h3>
 
       <div
         onClick={triggerUpload}
@@ -99,8 +99,8 @@ const MediaUploader = ({ onUploaded, articleId }) => {
         <div className="bg-indigo-100 p-3 rounded-full mb-3 group-hover:bg-indigo-200 transition-colors">
           <UploadCloud size={24} className="text-indigo-600" />
         </div>
-        <p className="text-sm font-medium text-gray-900">Click to upload files</p>
-        <p className="text-xs text-gray-500 mt-1">Images (PNG, JPG) or Videos (MP4)</p>
+        <p className="text-sm font-medium text-gray-900">Cliquez pour telecharger</p>
+        <p className="text-xs text-gray-500 mt-1">Images (PNG, JPG) ou Videos (MP4)</p>
       </div>
 
       <input

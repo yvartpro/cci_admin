@@ -22,7 +22,7 @@ export default function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (!form.email || !form.password) {
@@ -31,9 +31,10 @@ export default function Login() {
     }
 
     setLoading(true)
-    login(form.email, form.password)
+    await login(form.email, form.password)
       .then(() => {
         navigate("/cci");
+        console.log("success");
       })
       .catch((err) => {
         console.error("Erreur lors de la connexion :", err);

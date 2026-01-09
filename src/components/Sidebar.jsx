@@ -1,17 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FilePlus, Files, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Files, Users, LogOut, Image, GalleryHorizontal } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const { pathname } = useLocation();
   const { logout } = useAuth();
   const nav = [
-    { name: 'Dashboard', path: '/cci', icon: <LayoutDashboard size={20} /> },
-    { name: 'Create Article', path: '/cci/create', icon: <FilePlus size={20} /> },
-    { name: 'Manage Articles', path: '/cci/manage', icon: <Files size={20} /> },
-    { name: 'Manage Volunteers', path: '/cci/volunteers', icon: <Users size={20} /> },
-    { name: 'Media Library', path: '/cci/media', icon: <Files size={20} /> },
-    { name: "Logout", path: '/cci/logout', icon: <LogOut size={20} />, onClick: logout },
+    { name: 'Tableau de bord', path: '/cci', icon: <LayoutDashboard size={20} /> },
+    { name: 'Nouvel article', path: '/cci/create', icon: <FilePlus size={20} /> },
+    { name: 'Gerer les articles', path: '/cci/manage', icon: <Files size={20} /> },
+    { name: 'Volontaires', path: '/cci/volunteers', icon: <Users size={20} /> },
+    { name: 'Images defilantes', path: '/cci/carousel', icon: <GalleryHorizontal size={20} /> },
+    { name: 'Gallerie photos', path: '/cci/media', icon: <Image size={20} /> },
+    { name: "Deconnexion", path: '/cci/logout', icon: <LogOut size={20} />, onClick: logout },
   ];
 
   return (

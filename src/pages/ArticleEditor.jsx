@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { HandGrab, Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 import {
@@ -264,9 +264,9 @@ export default function ArticleEditor() {
                         {...attributes}
                         {...listeners}
                         className="cursor-grab text-gray-400"
-                        title="Drag section"
+                        title="Déplacer la section"
                       >
-                        ⋮⋮⋮
+                        <HandGrab size={20} />
                       </span>
 
                       <input
