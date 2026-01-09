@@ -34,10 +34,8 @@ export default function Login() {
     await login(form.email, form.password)
       .then(() => {
         navigate("/cci");
-        console.log("success");
       })
       .catch((err) => {
-        console.error("Erreur lors de la connexion :", err);
         setError("Email ou mot de passe incorrect.");
       })
       .finally(() => setLoading(false))

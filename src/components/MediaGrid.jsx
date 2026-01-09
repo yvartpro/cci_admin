@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { listMedia, deleteMediaEntry } from '../services/mediaStore'
-import { getFiles } from '../services/files.api'
+import { getFiles, patchFile } from '../services/files.api'
 import { LoadingSpinner } from './LoadingSpinner'
 
 const MediaGrid = ({ onSelect, refreshKey }) => {
@@ -19,7 +19,8 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
         url: s.url,
         urls: [s.url],
         filename: s.filename,
-        optimized: !!s.optimized
+        optimized: !!s.optimized,
+        use_as: s.use_as || ''
       }))
       setItems(serverItems)
     } catch (err) {
@@ -70,6 +71,21 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
               ) : (
                 <video src={m.url || (m.urls && m.urls[0])} className="w-full h-full object-cover" />
               )}
+            </div>
+            <div className="p-2 border-t">
+              <select
+                value={m.use_as}
+                onChange={(e) => patchFile(m.id, { use_as: e.target.value || null }).then(load)}
+                className="w-full text-[10px] bg-gray-50 border rounded px-1 py-0.5"
+              >
+                <option value="">-- Utiliser comme --</option>
+                <option value="hero">Hero (Accueil)</option>
+                <option value="presentation">Présentation</option>
+                <option value="volunteer">Volontaires</option>
+                <option value="social">Social</option>
+                <option value="lastar">LaSTAR</option>
+                <option value="invest">Invest</option>
+              </select>
             </div>
             <div className="p-2 flex items-center justify-between text-xs">
               <button onClick={() => onSelect && onSelect([m])} className="text-indigo-600">Select</button>

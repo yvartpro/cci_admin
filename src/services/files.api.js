@@ -14,3 +14,8 @@ export const deleteFile = async (id) => {
     const { data } = await apiClient.delete(`/files/${id}`)
     return data
 }
+
+export const patchFile = async (id, payload) => {
+    const { data } = await apiClient.patch(`/files/${id}`, payload)
+    return data
+}

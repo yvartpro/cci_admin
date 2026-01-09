@@ -1,0 +1,20 @@
+meta {
+  name: update file
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{base_url}}files
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
