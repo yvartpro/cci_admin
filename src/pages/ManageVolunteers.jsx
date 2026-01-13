@@ -57,7 +57,7 @@ const ManageVolunteers = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Manage Volunteers</h1>
         <Link
-          to="/cci/volunteers/new"
+          to="/cci/volunteer/new"
           className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
         >
           <Plus size={18} />
@@ -132,7 +132,7 @@ const ManageVolunteers = () => {
                         <Eye size={18} />
                       </button>
                       <Link
-                        to={`/cci/volunteers/edit/${volunteer.id}`}
+                        to={`/cci/volunteer/edit/${volunteer.id}`}
                         className="text-blue-600 hover:text-blue-800"
                         title="Edit"
                       >

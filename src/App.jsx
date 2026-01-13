@@ -15,6 +15,8 @@ import PartnerEditor from './pages/PartnerEditor';
 import ManagePartners from './pages/ManagePartners';
 import TitleEditor from './pages/TitleEditor';
 import ManageTitles from './pages/ManageTitles';
+import ManageComitards from './pages/ManageComitards';
+import ComitardEditor from './pages/ComitardEditor';
 
 function App() {
   const location = useLocation();
@@ -31,9 +33,9 @@ function App() {
           <Route path="/cci/media" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><MediaLibrary /></ProtectedRoute>} />
           <Route path="/cci/manage" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><ManageArticles /></ProtectedRoute>} />
           <Route path="/cci/edit/:id" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><ArticleEditor /></ProtectedRoute>} />
-          <Route path="/cci/volunteers" element={<ProtectedRoute allowedRoles={["admin"]}><ManageVolunteers /></ProtectedRoute>} />
-          <Route path="/cci/volunteers/new" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
-          <Route path="/cci/volunteers/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
+          <Route path="/cci/volunteer" element={<ProtectedRoute allowedRoles={["admin"]}><ManageVolunteers /></ProtectedRoute>} />
+          <Route path="/cci/volunteer/new" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
+          <Route path="/cci/volunteer/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><VolunteerEditor /></ProtectedRoute>} />
           <Route path="/cci/carousel" element={<ProtectedRoute allowedRoles={["admin"]}><ManageCarousels /></ProtectedRoute>} />
           <Route path="/cci/carousel/new" element={<ProtectedRoute allowedRoles={["admin"]}><CarouselEditor /></ProtectedRoute>} />
           <Route path="/cci/carousel/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><CarouselEditor /></ProtectedRoute>} />
@@ -43,6 +45,9 @@ function App() {
           <Route path="/cci/title" element={<ProtectedRoute allowedRoles={["admin"]}><ManageTitles /></ProtectedRoute>} />
           <Route path="/cci/title/new" element={<ProtectedRoute allowedRoles={["admin"]}><TitleEditor /></ProtectedRoute>} />
           <Route path="/cci/title/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><TitleEditor /></ProtectedRoute>} />
+          <Route path="/cci/comitard" element={<ProtectedRoute allowedRoles={["admin"]}><ManageComitards /></ProtectedRoute>} />
+          <Route path="/cci/comitard/new" element={<ProtectedRoute allowedRoles={["admin"]}><ComitardEditor /></ProtectedRoute>} />
+          <Route path="/cci/comitard/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><ComitardEditor /></ProtectedRoute>} />
           <Route path="/cci/login" element={<Login />} />
           <Route path="/cci/register" element={<Register />} />
         </Routes>
