@@ -13,6 +13,8 @@ import CarouselEditor from './pages/CarouselEditor';
 import ManageCarousels from './pages/ManageCarousels';
 import PartnerEditor from './pages/PartnerEditor';
 import ManagePartners from './pages/ManagePartners';
+import TitleEditor from './pages/TitleEditor';
+import ManageTitles from './pages/ManageTitles';
 
 function App() {
   const location = useLocation();
@@ -38,6 +40,9 @@ function App() {
           <Route path="/cci/partner" element={<ProtectedRoute allowedRoles={["admin"]}><ManagePartners /></ProtectedRoute>} />
           <Route path="/cci/partner/new" element={<ProtectedRoute allowedRoles={["admin"]}><PartnerEditor /></ProtectedRoute>} />
           <Route path="/cci/partner/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><PartnerEditor /></ProtectedRoute>} />
+          <Route path="/cci/title" element={<ProtectedRoute allowedRoles={["admin"]}><ManageTitles /></ProtectedRoute>} />
+          <Route path="/cci/title/new" element={<ProtectedRoute allowedRoles={["admin"]}><TitleEditor /></ProtectedRoute>} />
+          <Route path="/cci/title/edit/:id" element={<ProtectedRoute allowedRoles={["admin"]}><TitleEditor /></ProtectedRoute>} />
           <Route path="/cci/login" element={<Login />} />
           <Route path="/cci/register" element={<Register />} />
         </Routes>

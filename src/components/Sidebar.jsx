@@ -13,6 +13,7 @@ const Sidebar = () => {
     { name: 'Images defilantes', path: '/cci/carousel', icon: <GalleryHorizontal size={20} /> },
     { name: 'Gallerie photos', path: '/cci/media', icon: <Image size={20} /> },
     { name: 'Partenaires', path: '/cci/partner', icon: <Image size={20} /> },
+    { name: 'Titres', path: '/cci/title', icon: <Image size={20} /> },
     { name: "Deconnexion", path: '/cci/logout', icon: <LogOut size={20} />, onClick: logout },
   ];
 
