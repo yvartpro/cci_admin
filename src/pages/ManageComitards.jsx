@@ -73,8 +73,7 @@ const ManageComitards = () => {
                                 <th className="p-4">Image</th>
                                 <th className="p-4">Name</th>
                                 <th className="p-4">Role</th>
-                                <th className="p-4">Category</th>
-                                <th className="p-4">Status</th>
+                                <th className="p-4">Ordre</th>
                                 <th className="p-4">Actions</th>
                             </tr>
                         </thead>
@@ -89,9 +88,9 @@ const ManageComitards = () => {
                                 comitards.map(comitard => (
                                     <tr key={comitard.id} className="border-b hover:bg-gray-50">
                                         <td className="p-4">
-                                            {comitard.image_url ? (
+                                            {comitard.image?.url ? (
                                                 <img
-                                                    src={comitard.image_url}
+                                                    src={comitard.image?.url}
                                                     alt={comitard.name}
                                                     className="w-12 h-12 rounded-full object-cover"
                                                 />
@@ -102,27 +101,8 @@ const ManageComitards = () => {
                                             )}
                                         </td>
                                         <td className="p-4 font-medium">{comitard.name}</td>
-                                        <td className="p-4 text-gray-500">{comitard.role || '-'}</td>
-                                        <td className="p-4">
-                                            {comitard.category ? (
-                                                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
-                                                    {comitard.category}
-                                                </span>
-                                            ) : (
-                                                <span className="text-gray-400">-</span>
-                                            )}
-                                        </td>
-                                        <td className="p-4">
-                                            <span className={`px-2 py-1 text-xs font-medium rounded ${comitard.status === 'active' ? 'bg-green-100 text-green-700' :
-                                                comitard.status === 'inactive' ? 'bg-gray-100 text-gray-700' :
-                                                    'bg-red-100 text-red-700'
-                                                }`}>
-                                                {comitard.status}
-                                            </span>
-                                            {comitard.featured && (
-                                                <span className="ml-1 text-yellow-500" title="Featured">⭐</span>
-                                            )}
-                                        </td>
+                                        <td className="p-4 text-gray-500">{comitard.titre?.name || '-'}</td>
+                                        <td className="p-4 text-gray-500">{comitard.titre?.ordre || '-'}</td>
                                         <td className="p-4 flex gap-4">
                                             <button
                                                 onClick={() => handlePreview(comitard)}

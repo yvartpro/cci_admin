@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { HandGrab, Trash2 } from "lucide-react";
+import { HandGrab, Trash2, X, Plus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 import {
@@ -230,6 +230,55 @@ export default function ArticleEditor() {
               </button>
             </div>
           </div>
+
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {(Array.isArray(article.tags) ? article.tags : []).map((tag, idx) => (
+                <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full border border-indigo-100">
+                  {tag}
+                  <button
+                    onClick={() => setField("tags", (Array.isArray(article.tags) ? article.tags : []).filter((_, i) => i !== idx))}
+                    className="hover:text-red-500 transition-colors"
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                id="tag-input"
+                className="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs p-2 border"
+                placeholder="Ajouter un tag... (Pressez Entrée)"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.target.value.trim();
+                    const currentTags = Array.isArray(article.tags) ? article.tags : [];
+                    if (val && !currentTags.includes(val)) {
+                      setField("tags", [...currentTags, val]);
+                      e.target.value = "";
+                    }
+                  }
+                }}
+              />
+              <button
+                onClick={() => {
+                  const input = document.getElementById('tag-input');
+                  const val = input.value.trim();
+                  const currentTags = Array.isArray(article.tags) ? article.tags : [];
+                  if (val && !currentTags.includes(val)) {
+                    setField("tags", [...currentTags, val]);
+                    input.value = "";
+                  }
+                }}
+                className="p-2 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 border border-indigo-100"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
         </Card>
 
         <Header title="Content Sections" action="Add New Section" onAction={addSection} />
@@ -249,10 +298,10 @@ export default function ArticleEditor() {
           }}
         >
           <SortableContext
-            items={article.sections.map(s => s.id)}
+            items={(Array.isArray(article.sections) ? article.sections : []).map(s => s.id)}
             strategy={verticalListSortingStrategy}
           >
-            {article.sections.map((section) => (
+            {(Array.isArray(article.sections) ? article.sections : []).map((section) => (
               <SortableSection key={section.id} id={section.id}>
                 {({ attributes, listeners }) => (
                   <Card>
@@ -299,7 +348,7 @@ export default function ArticleEditor() {
 
                     {/* BLOCKS (UNCHANGED) */}
                     {!collapsedSections[section.id] && (<>{
-                      section.blocks.map((block) => (
+                      (Array.isArray(section.blocks) ? section.blocks : []).map((block) => (
                         <div key={block.id} className="mb-4 relative">
                           <IconBtn
                             className="absolute right-0 top-0"

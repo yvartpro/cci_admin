@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Trash2, Plus } from "lucide-react";
 import { getTitles } from "../services/title.api";
 
 import {
@@ -49,7 +50,25 @@ export default function ComitardEditor() {
         getTitles().then(setTitles).catch(console.error);
     }, []);
 
-    const setField = (key, value) => setComitard((comitard) => ({ ...comitard, [key]: value }));
+    const setField = (key, value) => {
+        setComitard((comitard) => ({ ...comitard, [key]: value }));
+    };
+
+    const addLink = () => {
+        const newLinks = [...(comitard.links || []), { label: "", url: "" }];
+        setField("links", newLinks);
+    };
+
+    const removeLink = (index) => {
+        const newLinks = (comitard.links || []).filter((_, i) => i !== index);
+        setField("links", newLinks);
+    };
+
+    const updateLink = (index, key, val) => {
+        const newLinks = [...(comitard.links || [])];
+        newLinks[index] = { ...newLinks[index], [key]: val };
+        setField("links", newLinks);
+    };
 
     const openImageMedia = () => {
         setShowMediaLibrary(true);
@@ -67,7 +86,7 @@ export default function ComitardEditor() {
     const save = () => {
         const payload = { ...comitard };
         const req = id ? updateComitard(id, payload) : createComitard(payload);
-        req.then(() => navigate("/cci/comitards")).catch(alert).finally(() => { });
+        req.then(() => navigate("/cci/comitard")).catch(alert).finally(() => { });
     };
 
     if (loading) return <div className="flex h-screen items-center justify-center text-gray-400">Loading…</div>;
@@ -109,25 +128,54 @@ export default function ComitardEditor() {
                         </div>
                     </div>
 
-                    <div className="mb-5">
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={comitard.featured}
-                                onChange={(e) => setField("featured", e.target.checked)}
-                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                            />
-                            <span className="text-sm font-medium text-gray-700">Featured Comitard</span>
-                        </label>
+                </Card>
+
+                <Card>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold text-gray-800">Réseaux Sociaux & Liens</h2>
+                        <button
+                            onClick={addLink}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors text-xs font-bold"
+                        >
+                            <Plus size={14} />
+                            Ajouter un lien
+                        </button>
                     </div>
 
-                    <Input
-                        label="Display Order"
-                        value={comitard.order}
-                        onChange={(v) => setField("order", parseInt(v) || 0)}
-                        placeholder="0"
-                        type="number"
-                    />
+                    {(Array.isArray(comitard.links) ? comitard.links : []).length === 0 ? (
+                        <p className="text-sm text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                            Aucun lien ajouté. Cliquez sur le bouton ci-dessus pour en ajouter.
+                        </p>
+                    ) : (
+                        <div className="space-y-3">
+                            {(Array.isArray(comitard.links) ? comitard.links : []).map((link, idx) => (
+                                <div key={idx} className="flex gap-2 items-start">
+                                    <div className="flex-1">
+                                        <input
+                                            className="block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs p-2 border"
+                                            value={link.label || ""}
+                                            onChange={(e) => updateLink(idx, "label", e.target.value)}
+                                            placeholder="Label (ex: LinkedIn)"
+                                        />
+                                    </div>
+                                    <div className="flex-[2]">
+                                        <input
+                                            className="block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs p-2 border"
+                                            value={link.url || ""}
+                                            onChange={(e) => updateLink(idx, "url", e.target.value)}
+                                            placeholder="https://..."
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={() => removeLink(idx)}
+                                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </Card>
 
                 <Card>
@@ -155,7 +203,7 @@ export default function ComitardEditor() {
 
             {/* PREVIEW */}
             <div className="hidden md:block md:w-1/2 p-10 bg-white overflow-y-auto">
-                <ComitardPreview data={comitard} titles={titles} />
+                <ComitardPreview data={comitard} titles={titles} image={comitard.image} />
             </div>
 
             {/* MEDIA MODAL */}
