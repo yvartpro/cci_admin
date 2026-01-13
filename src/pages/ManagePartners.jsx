@@ -1,42 +1,42 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Eye, X, Plus } from 'lucide-react';
-import { getCarousels, deleteCarousel, getCarouselById } from '../services/carousel.api';
+import { getPartners, deletePartner, getPartnerById } from '../services/partner.api';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 
-const ManageCarousels = () => {
-    const [carousels, setCarousels] = useState([]);
-    const [setPreviewCarousel] = useState(null);
+const ManagePartners = () => {
+    const [partners, setPartners] = useState([]);
+    const [setPreviewPartner] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        loadCarousels();
+        loadPartners();
     }, []);
 
-    const loadCarousels = () => {
+    const loadPartners = () => {
         setLoading(true);
-        getCarousels()
-            .then(data => setCarousels(data))
+        getPartners()
+            .then(data => setPartners(data))
             .catch(err => {
-                console.error('Failed to load carousels:', err);
-                setCarousels([]);
+                console.error('Failed to load partners:', err);
+                setPartners([]);
             })
             .finally(() => setLoading(false));
     };
 
     const handleDelete = (id) => {
-        if (confirm('Delete this carousel?')) {
-            deleteCarousel(id)
-                .then(() => setCarousels(carousels.filter(c => c.id !== id)))
+        if (confirm('Delete this partner?')) {
+            deletePartner(id)
+                .then(() => setPartners(partners.filter(p => p.id !== id)))
                 .catch(err => alert('Failed to delete: ' + err.message));
         }
     };
 
-    const handlePreview = async (carousel) => {
-        setPreviewCarousel(carousel);
+    const handlePreview = async (partner) => {
+        setPreviewPartner(partner);
         try {
-            const fresh = await getCarouselById(carousel.id);
-            setPreviewCarousel(fresh);
+            const fresh = await getPartnerById(partner.id);
+            setPreviewPartner(fresh);
         } catch (err) {
             console.error("Failed to refresh preview", err);
         }
@@ -45,17 +45,17 @@ const ManageCarousels = () => {
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Manage Carousels</h1>
+                <h1 className="text-2xl font-bold">Manage Partners</h1>
                 <Link
-                    to="/cci/carousel/new"
+                    to="/cci/partner/new"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                     <Plus size={18} />
-                    Add Carousel
+                    Add Partner
                 </Link>
             </div>
 
-            {loading ? <LoadingSpinner txt="carousels" /> : (
+            {loading ? <LoadingSpinner txt="partners" /> : (
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b">
@@ -66,46 +66,46 @@ const ManageCarousels = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {carousels.length === 0 ? (
+                            {partners.length === 0 ? (
                                 <tr>
                                     <td colSpan="6" className="p-8 text-center text-gray-500">
-                                        No carousels found. Create your first carousel!
+                                        No partners found. Create your first partner!
                                     </td>
                                 </tr>
                             ) : (
-                                carousels.map(carousel => (
-                                    <tr key={carousel.id} className="border-b hover:bg-gray-50">
+                                partners.map(partner => (
+                                    <tr key={partner.id} className="border-b hover:bg-gray-50">
                                         <td className="p-4">
-                                            {carousel.image_url ? (
+                                            {partner.image_url ? (
                                                 <img
-                                                    src={carousel.image_url}
-                                                    alt={carousel.title}
+                                                    src={partner.image_url}
+                                                    alt={partner.title}
                                                     className="w-12 h-12 rounded-full object-cover"
                                                 />
                                             ) : (
                                                 <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                    {carousel.title}
+                                                    {partner.title}
                                                 </div>
                                             )}
                                         </td>
-                                        <td className="p-4 font-medium">{carousel.title}</td>
+                                        <td className="p-4 font-medium">{partner.title}</td>
                                         <td className="p-4 flex gap-4">
                                             <button
-                                                onClick={() => handlePreview(carousel)}
+                                                onClick={() => handlePreview(partner)}
                                                 className="text-gray-600 hover:text-gray-900"
                                                 title="Preview"
                                             >
                                                 <Eye size={18} />
                                             </button>
                                             <Link
-                                                to={`/cci/carousel/edit/${carousel.id}`}
+                                                to={`/cci/partner/edit/${partner.id}`}
                                                 className="text-blue-600 hover:text-blue-800"
                                                 title="Edit"
                                             >
                                                 <Edit size={18} />
                                             </Link>
                                             <button
-                                                onClick={() => handleDelete(carousel.id)}
+                                                onClick={() => handleDelete(partner.id)}
                                                 className="text-red-600 hover:text-red-800"
                                                 title="Delete"
                                             >
@@ -123,4 +123,4 @@ const ManageCarousels = () => {
     );
 };
 
-export default ManageCarousels;
+export default ManagePartners;

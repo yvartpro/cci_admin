@@ -4,14 +4,21 @@ meta {
   seq: 13
 }
 
-get {
-  url: {{base_url}}files
-  body: none
+patch {
+  url: {{base_url}}files/14
+  body: json
   auth: bearer
 }
 
 auth:bearer {
   token: {{token}}
+}
+
+body:json {
+  
+    {
+      "use_as": "hero"
+    }
 }
 
 settings {

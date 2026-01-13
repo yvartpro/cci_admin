@@ -57,11 +57,11 @@ const ManageVolunteers = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Manage Volunteers</h1>
         <Link
-          to="/volunteers/new"
+          to="/cci/volunteers/new"
           className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
         >
           <Plus size={18} />
-          Add Volunteer
+          Ajouter un volontaire
         </Link>
       </div>
 
