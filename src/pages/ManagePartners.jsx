@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Eye, X, Plus } from 'lucide-react';
-import { getPartners, deletePartner, getPartnerById } from '../services/partner.api';
+import { getPartners, deletePartner } from '../services/partner.api';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 
 const ManagePartners = () => {
     const [partners, setPartners] = useState([]);
-    const [setPreviewPartner] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,15 +31,7 @@ const ManagePartners = () => {
         }
     };
 
-    const handlePreview = async (partner) => {
-        setPreviewPartner(partner);
-        try {
-            const fresh = await getPartnerById(partner.id);
-            setPreviewPartner(fresh);
-        } catch (err) {
-            console.error("Failed to refresh preview", err);
-        }
-    };
+
 
     return (
         <div className="p-8">
@@ -90,13 +81,7 @@ const ManagePartners = () => {
                                         </td>
                                         <td className="p-4 font-medium">{partner.title}</td>
                                         <td className="p-4 flex gap-4">
-                                            <button
-                                                onClick={() => handlePreview(partner)}
-                                                className="text-gray-600 hover:text-gray-900"
-                                                title="Preview"
-                                            >
-                                                <Eye size={18} />
-                                            </button>
+
                                             <Link
                                                 to={`/cci/partner/edit/${partner.id}`}
                                                 className="text-blue-600 hover:text-blue-800"

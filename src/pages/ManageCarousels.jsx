@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Eye, X, Plus } from 'lucide-react';
-import { getCarousels, deleteCarousel, getCarouselById } from '../services/carousel.api';
+import { getCarousels, deleteCarousel } from '../services/carousel.api';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 
 const ManageCarousels = () => {
     const [carousels, setCarousels] = useState([]);
-    const [setPreviewCarousel] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,15 +31,7 @@ const ManageCarousels = () => {
         }
     };
 
-    const handlePreview = async (carousel) => {
-        setPreviewCarousel(carousel);
-        try {
-            const fresh = await getCarouselById(carousel.id);
-            setPreviewCarousel(fresh);
-        } catch (err) {
-            console.error("Failed to refresh preview", err);
-        }
-    };
+
 
     return (
         <div className="p-8">
@@ -90,13 +81,7 @@ const ManageCarousels = () => {
                                         </td>
                                         <td className="p-4 font-medium">{carousel.title}</td>
                                         <td className="p-4 flex gap-4">
-                                            <button
-                                                onClick={() => handlePreview(carousel)}
-                                                className="text-gray-600 hover:text-gray-900"
-                                                title="Preview"
-                                            >
-                                                <Eye size={18} />
-                                            </button>
+
                                             <Link
                                                 to={`/cci/carousel/edit/${carousel.id}`}
                                                 className="text-blue-600 hover:text-blue-800"
