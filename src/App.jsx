@@ -23,10 +23,10 @@ function App() {
   const hideSidebar = location.pathname === '/cci/login' || location.pathname === '/cci/register';
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {!hideSidebar && <Sidebar />}
 
-      <main className="flex-1">
+      <main className="flex-1 flex flex-col overflow-y-auto">
         <Routes>
           <Route path="/cci" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><Dashboard /></ProtectedRoute>} />
           <Route path="/cci/create" element={<ProtectedRoute allowedRoles={["admin", "editor"]}><ArticleEditor /></ProtectedRoute>} />

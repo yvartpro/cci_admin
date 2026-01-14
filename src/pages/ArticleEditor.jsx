@@ -415,21 +415,23 @@ export default function ArticleEditor() {
 
       {/* MEDIA MODAL */}
       {showMediaLibrary && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center p-6 z-50">
-          <div className="bg-white w-full max-w-4xl p-4 rounded shadow-lg">
-            <div className="flex justify-between mb-4">
-              <h3 className="font-bold">Media Library</h3>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-6 z-50">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col p-4 rounded-xl shadow-2xl">
+            <div className="flex justify-between items-center mb-4 border-b pb-2">
+              <h3 className="font-bold text-lg">Media Library</h3>
               <button
                 onClick={() => {
                   setShowMediaLibrary(false);
                   setMediaCtx(null);
                 }}
-                className="text-sm text-gray-600"
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
               >
-                Close
+                <X size={20} />
               </button>
             </div>
-            <MediaGrid onSelect={handleMediaSelect} />
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              <MediaGrid onSelect={handleMediaSelect} />
+            </div>
           </div>
         </div>
       )}

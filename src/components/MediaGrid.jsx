@@ -43,7 +43,7 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
   }
 
   return loading ? <LoadingSpinner txt="media" /> : (
-    <div>
+    <div className="max-h-[calc(100vh-200px)] overflow-y-scroll">
       <div className="mb-3 flex items-center gap-2">
         <button onClick={load} className="bg-gray-100 px-3 py-1 rounded text-sm">Refresh</button>
       </div>
