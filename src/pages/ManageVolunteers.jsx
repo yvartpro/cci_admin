@@ -82,16 +82,16 @@ const ManageVolunteers = () => {
               {volunteers.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="p-8 text-center text-gray-500">
-                    No volunteers found. Create your first volunteer!
+                    Pas de volontaires trouvés. Ajoutez-en un!
                   </td>
                 </tr>
               ) : (
                 volunteers.map(volunteer => (
                   <tr key={volunteer.id} className="border-b hover:bg-gray-50">
                     <td className="p-4">
-                      {volunteer.image_url ? (
+                      {volunteer.image?.url ? (
                         <img
-                          src={volunteer.image_url}
+                          src={volunteer.image?.url}
                           alt={volunteer.name}
                           className="w-12 h-12 rounded-full object-cover"
                         />

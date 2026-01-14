@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Card, Input, Textarea } from "../components/MyUtilities";
 
 import {
     createCarousel,
@@ -19,9 +19,6 @@ const EMPTY_CAROUSEL = {
     image_url: "",
     image_file_id: ""
 };
-
-
-
 
 /* ================== COMPONENT ================== */
 export default function CarouselEditor() {
@@ -138,51 +135,3 @@ export default function CarouselEditor() {
         </div>
     );
 }
-
-const Card = ({ children }) => (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 transition-shadow hover:shadow-md">{children}</div>
-);
-
-const Input = ({ label, value, onChange, placeholder, type = "text" }) => (
-    <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <input
-            type={type}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-        />
-    </div>
-);
-
-const Textarea = ({ label, value, onChange, placeholder, rows = 3 }) => (
-    <div className="mb-5">
-        {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
-        <textarea
-            rows={rows}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-        />
-    </div>
-);
-
-const Select = ({ label, value, options, onChange }) => (
-    <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <select
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border bg-white"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-        >
-            <option value="">Select an option...</option>
-            {options.map((o) => (
-                <option key={o} value={o}>
-                    {o}
-                </option>
-            ))}
-        </select>
-    </div>
-);

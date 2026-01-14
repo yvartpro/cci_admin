@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 
 const VolunteerPreview = ({ data }) => {
+    console.log(data)
     if (!data) return null;
 
     const categoryColors = {
@@ -27,9 +28,9 @@ const VolunteerPreview = ({ data }) => {
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                 {/* Image or Initials */}
                 <div className="mb-6 flex justify-center">
-                    {data.image_url ? (
+                    {(data.image_url || data.image?.url) ? (
                         <img
-                            src={data.image_url}
+                            src={data.image_url || data.image?.url}
                             alt={data.name}
                             className="w-32 h-32 rounded-full object-cover border-4 border-emerald-100"
                         />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Trash2, Plus } from "lucide-react";
 import { getTitles } from "../services/title.api";
+import { Card, Input, Select } from "../components/MyUtilities";
 
 import {
     createComitard,
@@ -12,13 +12,13 @@ import {
 import WysiwygInput from "../components/WysiwygInput";
 import ComitardPreview from "../components/ComitardPreview";
 import MediaGrid from "../components/MediaGrid";
+import { AddLinks } from "../components/AddLinks";
 
 /* ================== CONSTANT ================== */
 const EMPTY_COMITARD = {
     name: "",
     cv: "",
     links: [],
-    image_url: null,
     image_file_id: null,
     titre_id: null,
 };
@@ -76,15 +76,14 @@ export default function ComitardEditor() {
 
     const handleMediaSelect = (entries) => {
         if (!entries.length) return;
-        const url = entries[0]?.urls?.[0] || null;
-        setField("image_url", url);
+        setField("image", entries[0]); // for preview
         setField("image_file_id", entries[0]?.id || null);
         setShowMediaLibrary(false);
     };
 
     /* ============ SAVE ============ */
     const save = () => {
-        const payload = { ...comitard };
+        const { image: _image, ...payload } = comitard;
         const req = id ? updateComitard(id, payload) : createComitard(payload);
         req.then(() => navigate("/cci/comitard")).catch(alert).finally(() => { });
     };
@@ -112,71 +111,36 @@ export default function ComitardEditor() {
 
                     <div className="mb-5">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image</label>
-                        <div className="flex gap-2">
-                            <input
-                                className="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                                value={comitard.image_url || ""}
-                                onChange={(e) => setField("image_url", e.target.value || null)}
-                                placeholder="https://..."
-                            />
+                        <div className="flex items-center gap-4">
+                            {comitard.image?.urls?.[0] && (
+                                <img
+                                    src={comitard.image.urls[0]}
+                                    alt="Preview"
+                                    className="w-16 h-16 rounded-full object-cover border border-gray-200 shadow-sm"
+                                />
+                            )}
                             <button
                                 onClick={openImageMedia}
-                                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="inline-flex items-center px-4 py-2 border border-indigo-600 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                             >
-                                Select Media
+                                {comitard.image_file_id ? "Change Image" : "Select Image"}
                             </button>
+                            {comitard.image_file_id && (
+                                <span className="text-xs text-gray-500 font-mono">ID: {comitard.image_file_id}</span>
+                            )}
                         </div>
                     </div>
 
                 </Card>
 
-                <Card>
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold text-gray-800">Réseaux Sociaux & Liens</h2>
-                        <button
-                            onClick={addLink}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors text-xs font-bold"
-                        >
-                            <Plus size={14} />
-                            Ajouter un lien
-                        </button>
-                    </div>
+                <AddLinks
+                    addLink={addLink}
+                    data={comitard}
+                    updateLink={updateLink}
+                    removeLink={removeLink}
+                />
 
-                    {(Array.isArray(comitard.links) ? comitard.links : []).length === 0 ? (
-                        <p className="text-sm text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                            Aucun lien ajouté. Cliquez sur le bouton ci-dessus pour en ajouter.
-                        </p>
-                    ) : (
-                        <div className="space-y-3">
-                            {(Array.isArray(comitard.links) ? comitard.links : []).map((link, idx) => (
-                                <div key={idx} className="flex gap-2 items-start">
-                                    <div className="flex-1">
-                                        <input
-                                            className="block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs p-2 border"
-                                            value={link.label || ""}
-                                            onChange={(e) => updateLink(idx, "label", e.target.value)}
-                                            placeholder="Label (ex: LinkedIn)"
-                                        />
-                                    </div>
-                                    <div className="flex-[2]">
-                                        <input
-                                            className="block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs p-2 border"
-                                            value={link.url || ""}
-                                            onChange={(e) => updateLink(idx, "url", e.target.value)}
-                                            placeholder="https://..."
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={() => removeLink(idx)}
-                                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </Card>
+
 
                 <Card>
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Biography</h2>
@@ -226,38 +190,3 @@ export default function ComitardEditor() {
         </div>
     );
 }
-
-const Card = ({ children }) => (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 transition-shadow hover:shadow-md">{children}</div>
-);
-
-const Input = ({ label, value, onChange, placeholder, type = "text" }) => (
-    <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <input
-            type={type}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-        />
-    </div>
-);
-
-const Select = ({ label, value, options, onChange }) => (
-    <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <select
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border bg-white"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-        >
-            <option value="">Sélectionnez un titre...</option>
-            {options.map((t) => (
-                <option key={t.id} value={t.id}>
-                    {t.name}
-                </option>
-            ))}
-        </select>
-    </div>
-);

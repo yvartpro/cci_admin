@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Trash2 } from "lucide-react";
-
+import { Card, Input, Textarea, Select } from "../components/MyUtilities";
 import {
     createVolunteer,
     updateVolunteer,
@@ -11,6 +10,7 @@ import {
 import WysiwygInput from "../components/WysiwygInput";
 import VolunteerPreview from "../components/VolunteerPreview";
 import MediaGrid from "../components/MediaGrid";
+import { AddLinks } from "../components/AddLinks";
 
 /* ================== CONSTANT ================== */
 const EMPTY_VOLUNTEER = {
@@ -19,11 +19,11 @@ const EMPTY_VOLUNTEER = {
     category: null,
     bio: "",
     testimonial: "",
-    image_url: null,
+    links: [],
     image_file_id: null,
     status: "active",
     featured: false,
-    order: 0,
+    order: null,
 };
 
 
@@ -51,23 +51,38 @@ export default function VolunteerEditor() {
     /* ============ HELPERS ============ */
     const setField = (key, value) => setVolunteer((volunteer) => ({ ...volunteer, [key]: value }));
 
+    const addLink = () => {
+        const newLinks = [...(volunteer.links || []), { label: "", url: "" }];
+        setField("links", newLinks);
+    };
+
+    const removeLink = (index) => {
+        const newLinks = (volunteer.links || []).filter((_, i) => i !== index);
+        setField("links", newLinks);
+    };
+
+    const updateLink = (index, key, val) => {
+        const newLinks = [...(volunteer.links || [])];
+        newLinks[index] = { ...newLinks[index], [key]: val };
+        setField("links", newLinks);
+    };
+
     const openImageMedia = () => {
         setShowMediaLibrary(true);
     };
 
     const handleMediaSelect = (entries) => {
         if (!entries.length) return;
-        const url = entries[0]?.urls?.[0] || null;
-        setField("image_url", url);
+        setField("image", entries[0]); // for preview
         setField("image_file_id", entries[0]?.id || null);
         setShowMediaLibrary(false);
     };
 
     /* ============ SAVE ============ */
     const save = () => {
-        const payload = { ...volunteer };
+        const { image: _image, ...payload } = volunteer;
         const req = id ? updateVolunteer(id, payload) : createVolunteer(payload);
-        req.then(() => navigate("/cci/volunteers")).catch(alert).finally(() => { });
+        req.then(() => navigate("/cci/volunteer")).catch(alert).finally(() => { });
     };
 
     if (loading) return <div className="flex h-screen items-center justify-center text-gray-400">Loading…</div>;
@@ -101,19 +116,23 @@ export default function VolunteerEditor() {
 
                     <div className="mb-5">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image</label>
-                        <div className="flex gap-2">
-                            <input
-                                className="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                                value={volunteer.image_url || ""}
-                                onChange={(e) => setField("image_url", e.target.value || null)}
-                                placeholder="https://..."
-                            />
+                        <div className="flex items-center gap-4">
+                            {volunteer.image?.urls?.[0] && (
+                                <img
+                                    src={volunteer.image.urls[0]}
+                                    alt="Preview"
+                                    className="w-16 h-16 rounded-full object-cover border border-gray-200"
+                                />
+                            )}
                             <button
                                 onClick={openImageMedia}
-                                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="inline-flex items-center px-4 py-2 border border-indigo-600 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                             >
-                                Select Media
+                                {volunteer.image_file_id ? "Change Image" : "Select Image"}
                             </button>
+                            {volunteer.image_file_id && (
+                                <span className="text-xs text-gray-500 font-mono">ID: {volunteer.image_file_id}</span>
+                            )}
                         </div>
                     </div>
 
@@ -137,6 +156,13 @@ export default function VolunteerEditor() {
                         type="number"
                     />
                 </Card>
+
+                <AddLinks
+                    addLink={addLink}
+                    data={volunteer}
+                    updateLink={updateLink}
+                    removeLink={removeLink}
+                />
 
                 <Card>
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Biography</h2>
@@ -196,51 +222,3 @@ export default function VolunteerEditor() {
         </div>
     );
 }
-
-const Card = ({ children }) => (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 transition-shadow hover:shadow-md">{children}</div>
-);
-
-const Input = ({ label, value, onChange, placeholder, type = "text" }) => (
-    <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <input
-            type={type}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-        />
-    </div>
-);
-
-const Textarea = ({ label, value, onChange, placeholder, rows = 3 }) => (
-    <div className="mb-5">
-        {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
-        <textarea
-            rows={rows}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-        />
-    </div>
-);
-
-const Select = ({ label, value, options, onChange }) => (
-    <div className="mb-5">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <select
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border bg-white"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-        >
-            <option value="">Select an option...</option>
-            {options.map((o) => (
-                <option key={o} value={o}>
-                    {o}
-                </option>
-            ))}
-        </select>
-    </div>
-);
