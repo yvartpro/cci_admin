@@ -11,8 +11,7 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
   const load = async () => {
     try {
       setLoading(true)
-      // fetch server files and local entries, but only display server-backed items
-      const files = await getFiles().catch(err => console.error(err)) //Promise.all([getFiles().catch(() => []), listMedia().catch(() => [])])
+      const files = await getFiles()
       const serverItems = files.map(s => ({
         id: String(s.id),
         type: (s.mime || '').startsWith('image') ? 'image' : 'video',
@@ -24,6 +23,7 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
       }))
       setItems(serverItems)
     } catch (err) {
+      console.error(err)
       listMedia().then(setItems)
     } finally {
       setLoading(false)
@@ -75,7 +75,7 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
             <div className="p-2 border-t">
               <select
                 value={m.use_as}
-                onChange={(e) => patchFile(m.id, { use_as: e.target.value || null }).then(load)}
+                onChange={(e) => patchFile(m.id, { use_as: e.target.value || null }).then(load).catch(err => console.error(err))}
                 className="w-full text-[10px] bg-gray-50 border rounded px-1 py-0.5"
               >
                 <option value="">-- Utiliser comme --</option>
@@ -85,6 +85,9 @@ const MediaGrid = ({ onSelect, refreshKey }) => {
                 <option value="social">Social</option>
                 <option value="lastar">LaSTAR</option>
                 <option value="invest">Invest</option>
+                <option value="activities">Activities</option>
+                <option value="contact">Contact</option>
+                <option value="news">News</option>
               </select>
             </div>
             <div className="p-2 flex items-center justify-between text-xs">
